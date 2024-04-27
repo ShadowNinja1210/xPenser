@@ -8,6 +8,8 @@ import { ModeToggle } from "@/components/mode-toggle";
 import { UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 import { Separator } from "@radix-ui/react-separator";
+import { DropdownMenu } from "@radix-ui/react-dropdown-menu";
+import { Help } from "./help-item";
 
 export default function Navbar() {
   return (
@@ -49,7 +51,7 @@ export default function Navbar() {
           className="hidden dark:bg-neutral-900 bg-neutral-100 px-8 md:py-0 pb-4 pt-2 w-full md:block md:w-auto md:static absolute top-full left-0 right-0"
           id="navbar-default"
         >
-          <ul className="font-medium flex flex-col md:gap-2 items-center p-4 md:p-0 border-2 border-neutral-200 rounded-lg bg-white md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-neutral-100 dark:bg-neutral-800 md:dark:bg-neutral-900 dark:border-neutral-700">
+          <ul className="font-medium flex flex-col gap-2 md:gap-0 items-center p-4 md:p-0 border-2 border-neutral-200 rounded-lg bg-white md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-neutral-100 dark:bg-neutral-800 md:dark:bg-neutral-900 dark:border-neutral-700">
             <li>
               <Link
                 href="#"
@@ -71,8 +73,11 @@ export default function Navbar() {
                 href="#"
                 className="text-center py-2 px-3 text-neutral-900 rounded hover:bg-neutral-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-neutral-700 dark:hover:text-white md:dark:hover:bg-transparent"
               >
-                Calendar
+                Reports
               </Link>
+            </li>
+            <li>
+              <Help />
             </li>
           </ul>
         </div>
