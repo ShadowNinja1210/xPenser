@@ -1,13 +1,4 @@
 import mongoose from "mongoose";
-import {
-  User,
-  Category,
-  Transaction,
-  PaymentMethod,
-  SavingsAccount,
-  SavingsGoal,
-  SavingsTransaction,
-} from "@/schema/schema";
 
 const MONGODB_URI = String(process.env.MONGODB_URI);
 
@@ -25,4 +16,4 @@ async function connectDB() {
   }
 }
 
-export { connectDB, User, Category, Transaction, PaymentMethod, SavingsAccount, SavingsGoal, SavingsTransaction };
+export { connectDB };

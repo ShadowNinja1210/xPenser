@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-export type ModalType = "Feedback";
+export type ModalType = "Feedback" | "AddTransaction";
 
 interface ModalStore {
   type: ModalType | null;

@@ -7,9 +7,12 @@ interface IUser extends Document {
   email: string;
   name: string;
   profilePicture?: string;
+  methods: { code: string; name: string }[];
+  categories: ICategory[];
 }
 
 interface ICategory extends Document {
+  _id: mongoose.Types.ObjectId;
   name: string;
   description?: string;
   type: "Expense" | "Income";
@@ -20,13 +23,9 @@ interface ITransaction extends Document {
   amount: number;
   type: "Expense" | "Income";
   categoryId: mongoose.Types.ObjectId;
-  description?: string;
+  description: string;
   date: Date;
-  methodId: string;
-}
-
-interface IPaymentMethod extends Document {
-  name: string;
+  methodCode: string;
 }
 
 interface ISavingsAccount extends Document {
@@ -50,17 +49,6 @@ interface ISavingsTransaction extends Document {
 }
 
 // --------------------
-// User Schema
-const userSchema: Schema<IUser> = new mongoose.Schema({
-  userId: { type: String, required: true, unique: true },
-  email: { type: String, required: true, unique: true },
-  name: { type: String, required: true },
-  profilePicture: { type: String },
-});
-
-const User: Model<IUser> = mongoose.models.User || mongoose.model<IUser>("User", userSchema);
-
-// --------------------
 // Category Schema
 const categorySchema: Schema<ICategory> = new mongoose.Schema({
   name: { type: String, required: true },
@@ -68,7 +56,28 @@ const categorySchema: Schema<ICategory> = new mongoose.Schema({
   type: { type: String, enum: ["Expense", "Income"], required: true },
 });
 
-const Category: Model<ICategory> = mongoose.models.Category || mongoose.model<ICategory>("Category", categorySchema);
+// --------------------
+// User Schema
+const userSchema: Schema<IUser> = new mongoose.Schema({
+  userId: { type: String, required: true, unique: true },
+  email: { type: String, required: true, unique: true },
+  name: { type: String, required: true },
+  profilePicture: { type: String },
+  methods: [
+    {
+      code: { type: String, required: true },
+      name: { type: String, required: true },
+    },
+  ],
+  categories: [categorySchema],
+});
+
+let User: Model<IUser>;
+if (mongoose.models.User) {
+  User = mongoose.model<IUser>("User");
+} else {
+  User = mongoose.model<IUser>("User", userSchema);
+}
 
 // --------------------
 // Transaction Schema
@@ -77,22 +86,17 @@ const transactionSchema: Schema<ITransaction> = new mongoose.Schema({
   amount: { type: Number, required: true },
   type: { type: String, enum: ["Expense", "Income"], required: true },
   categoryId: { type: mongoose.Schema.Types.ObjectId, ref: "Category", required: true },
-  description: { type: String },
+  description: { type: String, required: true },
   date: { type: Date, default: Date.now },
-  methodId: { type: String, required: true },
+  methodCode: { type: String, required: true },
 });
 
-const Transaction: Model<ITransaction> =
-  mongoose.models.Transaction || mongoose.model<ITransaction>("Transaction", transactionSchema);
-
-// --------------------
-// Payment Method Schema
-const paymentMethodSchema: Schema<IPaymentMethod> = new mongoose.Schema({
-  name: { type: String, required: true },
-});
-
-const PaymentMethod: Model<IPaymentMethod> =
-  mongoose.models.PaymentMethod || mongoose.model<IPaymentMethod>("PaymentMethod", paymentMethodSchema);
+let Transaction: Model<ITransaction>;
+if (mongoose.models.Transaction) {
+  Transaction = mongoose.model<ITransaction>("Transaction");
+} else {
+  Transaction = mongoose.model<ITransaction>("Transaction", transactionSchema);
+}
 
 // --------------------
 // Savings Account Schema
@@ -102,8 +106,12 @@ const savingsAccountSchema: Schema<ISavingsAccount> = new mongoose.Schema({
   balance: { type: Number, default: 0 },
 });
 
-const SavingsAccount: Model<ISavingsAccount> =
-  mongoose.models.SavingsAccount || mongoose.model<ISavingsAccount>("SavingsAccount", savingsAccountSchema);
+let SavingsAccount: Model<ISavingsAccount>;
+if (mongoose.models.SavingsAccount) {
+  SavingsAccount = mongoose.model<ISavingsAccount>("SavingsAccount");
+} else {
+  SavingsAccount = mongoose.model<ISavingsAccount>("SavingsAccount", savingsAccountSchema);
+}
 
 // --------------------
 // Savings Goal Schema
@@ -113,8 +121,12 @@ const savingsGoalSchema: Schema<ISavingsGoal> = new mongoose.Schema({
   targetAmount: { type: Number, required: true },
 });
 
-const SavingsGoal: Model<ISavingsGoal> =
-  mongoose.models.SavingsGoal || mongoose.model<ISavingsGoal>("SavingsGoal", savingsGoalSchema);
+let SavingsGoal: Model<ISavingsGoal>;
+if (mongoose.models.SavingsGoal) {
+  SavingsGoal = mongoose.model<ISavingsGoal>("SavingsGoal");
+} else {
+  SavingsGoal = mongoose.model<ISavingsGoal>("SavingsGoal", savingsGoalSchema);
+}
 
 // --------------------
 // Savings Transaction Schema
@@ -126,8 +138,11 @@ const savingsTransactionSchema: Schema<ISavingsTransaction> = new mongoose.Schem
   date: { type: Date, default: Date.now },
 });
 
-const SavingsTransaction: Model<ISavingsTransaction> =
-  mongoose.models.SavingsTransaction ||
-  mongoose.model<ISavingsTransaction>("SavingsTransaction", savingsTransactionSchema);
+let SavingsTransaction: Model<ISavingsTransaction>;
+if (mongoose.models.SavingsTransaction) {
+  SavingsTransaction = mongoose.model<ISavingsTransaction>("SavingsTransaction");
+} else {
+  SavingsTransaction = mongoose.model<ISavingsTransaction>("SavingsTransaction", savingsTransactionSchema);
+}
 
-export { User, Category, Transaction, PaymentMethod, SavingsAccount, SavingsGoal, SavingsTransaction };
+export { User, Transaction, SavingsAccount, SavingsGoal, SavingsTransaction };

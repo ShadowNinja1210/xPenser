@@ -8,10 +8,13 @@ import { ModeToggle } from "@/components/mode-toggle";
 import { UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 import { Separator } from "@radix-ui/react-separator";
-import { DropdownMenu } from "@radix-ui/react-dropdown-menu";
 import { Help } from "./help-item";
+import { useModal } from "@/hooks/use-modals-store";
+import { Skeleton } from "../ui/skeleton";
 
 export default function Navbar() {
+  const { onOpen } = useModal();
+
   return (
     <nav className="dark:bg-neutral-900 bg-neutral-100 md:px-10 py-4 px-4 flex justify-between relative">
       <button
@@ -31,9 +34,9 @@ export default function Navbar() {
         <svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
           <path
             stroke="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
             d="M1 1h15M1 7h15M1 13h15"
           />
         </svg>
@@ -82,7 +85,11 @@ export default function Navbar() {
           </ul>
         </div>
 
-        <button className="p-1 text-white bg-blue-700 hover:bg-blue-800 rounded max-h-9" aria-current="page">
+        <button
+          className="p-1 text-white bg-blue-700 hover:bg-blue-800 rounded max-h-9"
+          aria-current="page"
+          onClick={() => onOpen("AddTransaction")}
+        >
           <SquarePlus size={28} />
         </button>
 
@@ -92,13 +99,15 @@ export default function Navbar() {
             orientation="vertical"
             className="h-[36px] w-[2px] md:mx-4 mx-2 bg-neutral-300 dark:bg-neutral-700 "
           />
-          <UserButton
-            appearance={{
-              elements: {
-                avatarBox: "h-[40px] w-[40px]",
-              },
-            }}
-          />
+          {
+            <UserButton
+              appearance={{
+                elements: {
+                  avatarBox: "h-[40px] w-[40px]",
+                },
+              }}
+            />
+          }
         </div>
       </div>
     </nav>
