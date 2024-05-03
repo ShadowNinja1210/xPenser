@@ -1,4 +1,3 @@
-import { NextApiRequest, NextApiResponse } from "next";
 import currentProfile from "@/lib/current-profile";
 import { NextResponse } from "next/server";
 export async function GET(req: Request, params: { params: { userId: String } }) {

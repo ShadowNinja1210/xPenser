@@ -21,3 +21,15 @@ export const useModal = create<ModalStore>((set) => ({
     set({ type: null, isOpen: false });
   },
 }));
+
+interface ModalStore2 {
+  change: boolean;
+  setChange: (isLoaded: boolean) => void;
+}
+
+export const useChangeModal = create<ModalStore2>((set) => ({
+  change: false,
+  setChange: (change: boolean) => {
+    set({ change });
+  },
+}));

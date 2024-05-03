@@ -27,9 +27,17 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import transactionData from "@/lib/fetch-data";
+import { Loader } from "../loader";
+import { Badge } from "../ui/badge";
+import { format } from "date-fns";
+import { Skeleton } from "../ui/skeleton";
+import { useChangeModal } from "@/hooks/use-modals-store";
 
 declare module "@tanstack/react-table" {
   interface ColumnMeta<TData extends RowData, TValue> {
@@ -48,10 +56,6 @@ export type TransactionData = {
   methodId: string;
 };
 
-export type DataTableProps = {
-  data: TransactionData[];
-};
-
 function Filter({ column }: { column: Column<any, unknown> }) {
   return (
     <DropdownMenu>
@@ -60,16 +64,13 @@ function Filter({ column }: { column: Column<any, unknown> }) {
           Type <ChevronDown className="ml-2 h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
+
       <DropdownMenuContent defaultValue={""} align="end">
-        <DropdownMenuCheckboxItem textValue="" onClick={(e) => column.setFilterValue("")}>
-          Both
-        </DropdownMenuCheckboxItem>
-        <DropdownMenuCheckboxItem textValue="expense" onClick={(e) => column.setFilterValue("expense")}>
-          Expense
-        </DropdownMenuCheckboxItem>
-        <DropdownMenuCheckboxItem textValue="income" onClick={(e) => column.setFilterValue("income")}>
-          Income
-        </DropdownMenuCheckboxItem>
+        <DropdownMenuRadioGroup value={column.getFilterValue()} onValueChange={column.setFilterValue}>
+          <DropdownMenuRadioItem value="">Both</DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="expense">Expense</DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="income">Income</DropdownMenuRadioItem>
+        </DropdownMenuRadioGroup>
       </DropdownMenuContent>
     </DropdownMenu>
   );
@@ -112,12 +113,31 @@ export const columns: ColumnDef<TransactionData>[] = [
     header: ({ column }) => {
       return <Filter column={column} />;
     },
-    cell: ({ row }) => <div className="lowercase">{row.getValue("type")}</div>,
+    cell: ({ row }) => (
+      <Badge className={row.getValue("type") == "Expense" ? "bg-red-500" : " bg-green-500"}>
+        {row.getValue("type")}
+      </Badge>
+    ),
   },
   {
     accessorKey: "categoryId",
     header: () => <div className="text-left">Category</div>,
-    cell: ({ row }) => <div className="lowercase">{row.getValue("categoryId")}</div>,
+    cell: ({ row }) => <div className="">{row.getValue("categoryId")}</div>,
+  },
+  {
+    accessorKey: "methodCode",
+    header: () => <div className="text-left">Method</div>,
+    cell: ({ row }) => <div className="">{row.getValue("methodCode")}</div>,
+  },
+  {
+    accessorKey: "date",
+    header: ({ column }) => (
+      <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+        Date
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+    cell: ({ row }) => <div>{format(row.getValue("date"), "PP")}</div>,
   },
   {
     id: "actions",
@@ -148,11 +168,25 @@ export const columns: ColumnDef<TransactionData>[] = [
   },
 ];
 
-export function DataTable({ data }: DataTableProps) {
+export function DataTable() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+  const [data, setData] = React.useState<TransactionData[]>([]);
+  const [loaderOn, setLoaderOn] = React.useState(true);
+
+  const { change } = useChangeModal();
+
+  React.useEffect(() => {
+    setLoaderOn(true);
+    const fetchData = async () => {
+      const data = await transactionData();
+      setData(data);
+      setLoaderOn(false);
+    };
+    fetchData();
+  }, [change]);
 
   const table = useReactTable({
     data,
@@ -200,7 +234,7 @@ export function DataTable({ data }: DataTableProps) {
                     checked={column.getIsVisible()}
                     onCheckedChange={(value) => column.toggleVisibility(!!value)}
                   >
-                    {column.id}
+                    {column.id === "methodCode" ? "Method" : column.id === "categoryId" ? "Category" : column.id}
                   </DropdownMenuCheckboxItem>
                 );
               })}
@@ -234,7 +268,17 @@ export function DataTable({ data }: DataTableProps) {
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No results.
+                  {loaderOn ? (
+                    <div className=" space-y-4">
+                      <Skeleton className="w-full h-[64px]" />
+                      <Skeleton className="w-full h-[64px]" />
+                      <Skeleton className="w-full h-[64px]" />
+                      <Skeleton className="w-full h-[64px]" />
+                      <Skeleton className="w-full h-[64px]" />
+                    </div>
+                  ) : (
+                    "No results."
+                  )}
                 </TableCell>
               </TableRow>
             )}

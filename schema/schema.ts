@@ -19,7 +19,7 @@ interface ICategory extends Document {
 }
 
 interface ITransaction extends Document {
-  userId: mongoose.Types.ObjectId;
+  userId: string;
   amount: number;
   type: "Expense" | "Income";
   categoryId: mongoose.Types.ObjectId;
@@ -29,7 +29,7 @@ interface ITransaction extends Document {
 }
 
 interface ISavingsAccount extends Document {
-  userId: mongoose.Types.ObjectId;
+  userId: string;
   name: string;
   balance: number;
 }
@@ -82,7 +82,7 @@ if (mongoose.models.User) {
 // --------------------
 // Transaction Schema
 const transactionSchema: Schema<ITransaction> = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  userId: { type: String, required: true },
   amount: { type: Number, required: true },
   type: { type: String, enum: ["Expense", "Income"], required: true },
   categoryId: { type: mongoose.Schema.Types.ObjectId, ref: "Category", required: true },
@@ -101,7 +101,7 @@ if (mongoose.models.Transaction) {
 // --------------------
 // Savings Account Schema
 const savingsAccountSchema: Schema<ISavingsAccount> = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  userId: { type: String, required: true },
   name: { type: String, required: true },
   balance: { type: Number, default: 0 },
 });

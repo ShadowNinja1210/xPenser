@@ -183,10 +183,10 @@ function TransactionForm({ onSubmit, form }: TransactionFormProps) {
                               key={method._id}
                               className="capitalize"
                               onSelect={() => {
-                                form.setValue("method", method._id);
+                                form.setValue("method", method.code);
                                 setMethodSelected(method.name);
                               }}
-                              textValue={method._id.toString()}
+                              textValue={method.code}
                               {...field}
                             >
                               {method.name}
@@ -228,7 +228,10 @@ function TransactionForm({ onSubmit, form }: TransactionFormProps) {
                           value={field.value}
                           mode="single"
                           selected={date}
-                          onSelect={setDate}
+                          onSelect={(e) => {
+                            setDate(e);
+                            form.setValue("date", e);
+                          }}
                           initialFocus
                           disabled={(date: Date) => date > new Date() || date < new Date("1900-01-01")}
                         />
@@ -249,7 +252,14 @@ function TransactionForm({ onSubmit, form }: TransactionFormProps) {
               <FormItem className="space-y-3">
                 <FormLabel>Transaction Type</FormLabel>
                 <FormControl>
-                  <RadioGroup className="flex items-end space-y-1" onChange={field.onChange}>
+                  <RadioGroup
+                    className="flex items-end space-y-1"
+                    onChange={(e) => {
+                      if (field.value !== e.target.value) {
+                        form.setValue("type", e.target.value);
+                      }
+                    }}
+                  >
                     <FormItem className="flex items-center space-x-3 space-y-0">
                       <FormControl>
                         <RadioGroupItem value="Expense" />

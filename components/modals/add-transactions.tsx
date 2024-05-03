@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { useEffect, useState } from "react";
-import { useModal } from "@/hooks/use-modals-store";
+import { useChangeModal, useModal } from "@/hooks/use-modals-store";
 import { useRouter } from "next/navigation";
 import TransactionForm from "@/components/forms/transaction-form";
 
@@ -25,6 +25,8 @@ export default function AddTransactions() {
     setIsMounted(true);
   }, []);
 
+  const { change, setChange } = useChangeModal();
+
   const router = useRouter();
 
   const today = new Date();
@@ -34,15 +36,26 @@ export default function AddTransactions() {
     defaultValues: {
       category: "",
       description: "",
-      date: today,
       method: "",
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      console.log(values);
+      const res = await fetch(`/api/user`);
+      const user = await res.json();
+      const userId = user.userId;
+
+      const response = await fetch(`/api/transaction/${userId}/new`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
+
       form.reset();
+      setChange(!change);
       router.refresh();
       onClose();
     } catch (e) {
