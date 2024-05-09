@@ -1,20 +1,18 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
-import { ChevronDown } from "lucide-react";
+
 import { format } from "date-fns";
 
-import { Calendar as CalendarIcon } from "lucide-react";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { ChevronDown, Calendar as CalendarIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+
+import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
@@ -23,8 +21,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { DialogFooter } from "@/components/ui/dialog";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "../ui/textarea";
-import { Separator } from "@radix-ui/react-dropdown-menu";
+import { Textarea } from "@/components/ui/textarea";
+
 import { Loader } from "../loader";
 
 interface ICategory {

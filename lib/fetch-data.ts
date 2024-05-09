@@ -20,7 +20,13 @@ const transactionData = async () => {
       transaction.categoryId = category.name;
     });
 
-    return transactions;
+    const data = {
+      transactions,
+      methods,
+      categories,
+    };
+
+    return data;
   } catch (error) {
     console.error(error);
   }

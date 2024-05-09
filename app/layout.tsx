@@ -26,7 +26,7 @@ export default function RootLayout({
       }}
     >
       <html lang="en" suppressHydrationWarning>
-        <body className={cn(inter.className, "bg-white dark:bg-[#313338] dark:text-gray-200")}>
+        <body className={cn(inter.className, "bg-neutral-100 dark:bg-neutral-900 dark:text-gray-200")}>
           <ThemeProvider attribute="class" defaultTheme="dark" enableSystem storageKey="xpenser-theme">
             {children}
           </ThemeProvider>

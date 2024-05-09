@@ -75,6 +75,10 @@
   }
 }
 
+:root {
+  --bgGradient: linear-gradient(90deg, hsl(var(--background)), hsl(var(--background)) 50%, hsl(var(--background)) 100%);
+}
+
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
