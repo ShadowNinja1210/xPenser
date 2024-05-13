@@ -20,6 +20,10 @@ const transactionData = async () => {
       transaction.categoryId = category.name;
     });
 
+    transactions.sort((a: any, b: any) => {
+      return new Date(a.date).getTime() - new Date(b.date).getTime();
+    });
+
     const data = {
       transactions,
       methods,
@@ -32,4 +36,19 @@ const transactionData = async () => {
   }
 };
 
-export default transactionData;
+const savingsData = async () => {
+  try {
+    connectDB();
+    const res = await fetch("/api/user");
+    const fetchedUser = await res.json();
+
+    const response = await fetch(`/api/savings/${fetchedUser.userId}`);
+    const savings = await response.json();
+
+    return savings;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export { transactionData, savingsData };

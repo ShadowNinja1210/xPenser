@@ -28,20 +28,18 @@ interface ITransaction extends Document {
   methodCode: string;
 }
 
-interface ISavingsAccount extends Document {
+interface ISavingsGoal extends Document {
+  _id: mongoose.Types.ObjectId;
   userId: string;
   name: string;
-  balance: number;
-}
-
-interface ISavingsGoal extends Document {
-  accountId: mongoose.Types.ObjectId;
-  name: string;
   targetAmount: number;
+  achieved: number;
+  source: string;
+  description: string;
 }
 
 interface ISavingsTransaction extends Document {
-  accountId: mongoose.Types.ObjectId;
+  savingId: mongoose.Types.ObjectId;
   amount: number;
   type: "Deposit" | "Withdrawal";
   description?: string;
@@ -99,26 +97,14 @@ if (mongoose.models.Transaction) {
 }
 
 // --------------------
-// Savings Account Schema
-const savingsAccountSchema: Schema<ISavingsAccount> = new mongoose.Schema({
-  userId: { type: String, required: true },
-  name: { type: String, required: true },
-  balance: { type: Number, default: 0 },
-});
-
-let SavingsAccount: Model<ISavingsAccount>;
-if (mongoose.models.SavingsAccount) {
-  SavingsAccount = mongoose.model<ISavingsAccount>("SavingsAccount");
-} else {
-  SavingsAccount = mongoose.model<ISavingsAccount>("SavingsAccount", savingsAccountSchema);
-}
-
-// --------------------
 // Savings Goal Schema
 const savingsGoalSchema: Schema<ISavingsGoal> = new mongoose.Schema({
-  accountId: { type: mongoose.Schema.Types.ObjectId, ref: "SavingsAccount", required: true },
+  userId: { type: String, required: true },
   name: { type: String, required: true },
   targetAmount: { type: Number, required: true },
+  achieved: { type: Number, required: true },
+  source: { type: String, required: true },
+  description: { type: String },
 });
 
 let SavingsGoal: Model<ISavingsGoal>;
@@ -131,7 +117,7 @@ if (mongoose.models.SavingsGoal) {
 // --------------------
 // Savings Transaction Schema
 const savingsTransactionSchema: Schema<ISavingsTransaction> = new mongoose.Schema({
-  accountId: { type: mongoose.Schema.Types.ObjectId, ref: "SavingsAccount", required: true },
+  savingId: { type: mongoose.Schema.Types.ObjectId, ref: "SavingsGoal", required: true },
   amount: { type: Number, required: true },
   type: { type: String, enum: ["Deposit", "Withdrawal"], required: true },
   description: { type: String },
@@ -145,4 +131,4 @@ if (mongoose.models.SavingsTransaction) {
   SavingsTransaction = mongoose.model<ISavingsTransaction>("SavingsTransaction", savingsTransactionSchema);
 }
 
-export { User, Transaction, SavingsAccount, SavingsGoal, SavingsTransaction };
+export { User, Transaction, SavingsGoal, SavingsTransaction };

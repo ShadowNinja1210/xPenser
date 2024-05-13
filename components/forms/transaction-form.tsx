@@ -23,7 +23,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
-import { Loader } from "../loader";
+import { Loader } from "../loaders/loader";
 
 interface ICategory {
   _id: object;
@@ -227,7 +227,7 @@ function TransactionForm({ onSubmit, form }: TransactionFormProps) {
                           mode="single"
                           selected={date}
                           onSelect={(e) => {
-                            setDate(e);
+                            setDate(e as Date);
                             form.setValue("date", e);
                           }}
                           initialFocus

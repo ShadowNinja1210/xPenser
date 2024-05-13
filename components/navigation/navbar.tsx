@@ -1,19 +1,39 @@
 "use client";
 
 import Image from "next/image";
-import Logo from "@/public/Logo.svg";
-import { SquarePlus } from "lucide-react";
-
-import { ModeToggle } from "@/components/mode-toggle";
-import { UserButton } from "@clerk/nextjs";
 import Link from "next/link";
-import { Separator } from "@radix-ui/react-separator";
-import { Help } from "./help-item";
+import { usePathname } from "next/navigation";
+
+import Logo from "@/public/Logo.svg";
+import { SquarePlus, ExternalLink } from "lucide-react";
+
 import { useModal } from "@/hooks/use-modals-store";
-import { Skeleton } from "../ui/skeleton";
+
+import { UserButton } from "@clerk/nextjs";
+import { Help } from "./help-item";
+import { ModeToggle } from "@/components/mode-toggle";
+import { Separator } from "@/components/ui/separator";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function Navbar() {
+  const pathname = usePathname();
+  console.log(pathname);
+
   const { onOpen } = useModal();
+  const handleAdd = () => {
+    if (pathname.includes("/transactions") || pathname.includes("/dashboard")) {
+      onOpen("AddTransaction");
+    } else if (pathname.includes("/saving")) {
+      onOpen("AddSavings");
+    } else if (pathname.includes("/debt")) {
+      onOpen("AddDebt");
+    }
+  };
 
   return (
     <nav className=" dark:bg-neutral-950 bg-neutral-200 md:px-10 py-4 px-4 flex justify-between relative z-10">
@@ -58,7 +78,9 @@ export default function Navbar() {
             <li>
               <Link
                 href="/dashboard"
-                className="text-center py-2 px-3 text-neutral-900 rounded hover:bg-neutral-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-neutral-700 dark:hover:text-white md:dark:hover:bg-transparent"
+                className={`${
+                  pathname === "/dashboard" ? "text-blue-700 dark:text-blue-500" : "text-neutral-900 dark:text-white"
+                } text-center py-2 px-3  rounded hover:bg-neutral-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:hover:bg-neutral-700 dark:hover:text-white md:dark:hover:bg-transparent`}
               >
                 Dashboard
               </Link>
@@ -66,7 +88,9 @@ export default function Navbar() {
             <li>
               <Link
                 href="/transactions"
-                className="text-center py-2 px-3 text-neutral-900 rounded hover:bg-neutral-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-neutral-700 dark:hover:text-white md:dark:hover:bg-transparent"
+                className={`${
+                  pathname === "/transactions" ? "text-blue-700 dark:text-blue-500" : "text-neutral-900 dark:text-white"
+                } text-center py-2 px-3  rounded hover:bg-neutral-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:hover:bg-neutral-700 dark:hover:text-white md:dark:hover:bg-transparent`}
               >
                 Transactions
               </Link>
@@ -74,18 +98,51 @@ export default function Navbar() {
             <li>
               <Link
                 href="#"
-                className="text-center py-2 px-3 text-neutral-900 rounded hover:bg-neutral-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-neutral-700 dark:hover:text-white md:dark:hover:bg-transparent"
-              >
-                Calendar
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="#"
-                className="text-center py-2 px-3 text-neutral-900 rounded hover:bg-neutral-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-neutral-700 dark:hover:text-white md:dark:hover:bg-transparent"
+                className={` ${
+                  pathname === "/reports" ? "text-blue-700 dark:text-blue-500" : "text-neutral-900 dark:text-white"
+                } text-center py-2 px-3 rounded hover:bg-neutral-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:hover:bg-neutral-700 dark:hover:text-white md:dark:hover:bg-transparent`}
               >
                 Reports
               </Link>
+            </li>
+            <li>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <p
+                    className={`${
+                      pathname === "/savings" || pathname === "/debts"
+                        ? "text-blue-700 dark:text-blue-500"
+                        : "text-neutral-900 dark:text-white"
+                    } cursor-pointer text-center py-2 px-3  rounded hover:bg-neutral-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:hover:bg-neutral-700 dark:hover:text-white md:dark:hover:bg-transparent`}
+                  >
+                    Others
+                  </p>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem>
+                    <Link
+                      href="/savings"
+                      className={`${
+                        pathname === "/savings"
+                          ? "text-blue-700 dark:text-blue-500"
+                          : "text-neutral-900 dark:text-white"
+                      } flex items-center justify-between w-full`}
+                    >
+                      Savings <ExternalLink className="h-3.5 w-3.5" />
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Link
+                      href="/debt"
+                      className={`${
+                        pathname === "/debts" ? "text-blue-700 dark:text-blue-500" : "text-neutral-900 dark:text-white"
+                      } flex items-center justify-between w-full`}
+                    >
+                      Debt <ExternalLink className="h-3.5 w-3.5" />
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </li>
             <li>
               <Help />
@@ -96,7 +153,7 @@ export default function Navbar() {
         <button
           className="p-1 text-white bg-blue-700 hover:bg-blue-800 rounded max-h-9"
           aria-current="page"
-          onClick={() => onOpen("AddTransaction")}
+          onClick={() => handleAdd()}
         >
           <SquarePlus size={28} />
         </button>

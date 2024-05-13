@@ -12,7 +12,7 @@ import {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
 } from "@/components/ui/dropdown-menu";
-import transactionData from "@/lib/fetch-data";
+import { transactionData } from "@/lib/fetch-data";
 import { Separator } from "../ui/separator";
 
 export type TransactionData = {
@@ -45,8 +45,8 @@ export function FilterAction({ data, setFilteredData }: FilterActionProps) {
     const fetchedData = transactionData();
     fetchedData.then((datas) => {
       if (datas) {
-        const categoryArr = datas.categories.map((category: any) => category.name);
-        const methodArr = datas.methods.map((method: any) => method.name);
+        const categoryArr = datas.categories?.map((category: any) => category.name);
+        const methodArr = datas.methods?.map((method: any) => method.name);
         setCategories(categoryArr);
         setMethods(methodArr);
         setFilters({ ...filters, category: categoryArr, method: methodArr });

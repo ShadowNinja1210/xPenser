@@ -3,9 +3,9 @@
 import { useMediaQuery } from "@react-hook/media-query";
 import { useState, useEffect } from "react";
 
-import { DataCard } from "@/components/table/data-cards";
-import { DataTable } from "@/components/table/data-table";
-import { Loader } from "@/components/loader";
+import { DataCard } from "@/components/transactions/data-cards";
+import { DataTable } from "@/components/transactions/data-table";
+import { Loader } from "@/components/loaders/loader";
 
 export default function TransactionPage() {
   const isMobileOrTablet = useMediaQuery("(max-width: 768px)");

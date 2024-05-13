@@ -1,6 +1,6 @@
 import currentProfile from "@/lib/current-profile";
 import { NextResponse } from "next/server";
-export async function GET(req: Request, params: { params: { userId: String } }) {
+export async function GET(res: Response, req: Request) {
   try {
     const response = await currentProfile();
     const profile = response?.toJSON();

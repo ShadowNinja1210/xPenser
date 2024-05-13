@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { Feedback } from "@/components/modals/feedback-form";
 import AddTransactions from "@/components/modals/add-transactions";
+import Savings from "@/components/modals/add-savings";
+import Debt from "@/components/modals/add-debt";
 
 export const ModalProvider = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -19,6 +21,8 @@ export const ModalProvider = () => {
     <>
       <Feedback />
       <AddTransactions />
+      <Savings />
+      <Debt />
     </>
   );
 };

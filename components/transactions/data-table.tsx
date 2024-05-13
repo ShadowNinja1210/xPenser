@@ -34,11 +34,11 @@ import {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
 } from "@/components/ui/dropdown-menu";
-import transactionData from "@/lib/fetch-data";
+import { transactionData } from "@/lib/fetch-data";
 import { Badge } from "../ui/badge";
 import { format } from "date-fns";
 import { Skeleton } from "../ui/skeleton";
-import { useChangeModal } from "@/hooks/use-modals-store";
+import { useChangeModal, useModal } from "@/hooks/use-modals-store";
 import { ActionTooltip } from "../action-tool-tip";
 import { FilterAction } from "./filter-action";
 
@@ -75,7 +75,7 @@ function Filter({ column }: { column: Column<any, unknown> }) {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent defaultValue={""} align="end">
-        <DropdownMenuRadioGroup value={column.getFilterValue()} onValueChange={column.setFilterValue}>
+        <DropdownMenuRadioGroup value={column.getFilterValue() as string} onValueChange={column.setFilterValue}>
           <DropdownMenuRadioItem value="">Both</DropdownMenuRadioItem>
           <DropdownMenuRadioItem value="expense">Expense</DropdownMenuRadioItem>
           <DropdownMenuRadioItem value="income">Income</DropdownMenuRadioItem>
@@ -203,6 +203,7 @@ export function DataTable() {
   const [loaderOn, setLoaderOn] = React.useState(true);
 
   const { change } = useChangeModal();
+  const { onOpen } = useModal();
 
   React.useEffect(() => {
     setLoaderOn(true);
@@ -291,8 +292,17 @@ export function DataTable() {
       </div>
       <Card x-chunk="dashboard-05-chunk-3">
         <CardHeader className="px-7">
-          <CardTitle>Transactions</CardTitle>
-          <CardDescription>View all the transactions.</CardDescription>
+          <div className="flex justify-between items-center">
+            <div>
+              <CardTitle>
+                <p>Transactions</p>
+              </CardTitle>
+              <CardDescription>View and manage all {filteredData.length} transactions.</CardDescription>
+            </div>
+            <Button className=" bg-blue-700 text-white" onClick={() => onOpen("AddTransaction")}>
+              Add new
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           <div className="rounded-md border">
@@ -366,7 +376,7 @@ export function DataTable() {
                     {table.getState().pagination.pageSize} <ChevronDown className="ml-2 h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" value={table.getState().pagination.pageSize}>
+                <DropdownMenuContent align="end">
                   {[5, 10, 20, 30, 40, 50].map((pageSize) => (
                     <DropdownMenuRadioItem
                       key={pageSize}

@@ -6,7 +6,6 @@ import * as _ from "lodash";
 import { ChevronDown, MoreHorizontal, LayoutGrid, CalendarDays } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -14,18 +13,13 @@ import { CardContent, Card, CardDescription, CardHeader, CardTitle } from "@/com
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
-  DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
 } from "@/components/ui/dropdown-menu";
 
-import transactionData from "@/lib/fetch-data";
+import { transactionData } from "@/lib/fetch-data";
 import { format } from "date-fns";
-import { useChangeModal } from "@/hooks/use-modals-store";
-import { ActionTooltip } from "../action-tool-tip";
+import { useChangeModal, useModal } from "@/hooks/use-modals-store";
 import { FilterAction } from "./filter-action";
 
 export type ICategory = {
@@ -51,6 +45,7 @@ export function DataCard() {
   const [loaderOn, setLoaderOn] = React.useState(true);
 
   const { change } = useChangeModal();
+  const { onOpen } = useModal();
 
   React.useEffect(() => {
     setLoaderOn(true);
@@ -102,6 +97,19 @@ export function DataCard() {
       </div>
       <Card>
         <CardHeader className="px-7">
+          <div className="flex justify-between items-center">
+            <div>
+              <CardTitle>
+                <p>Transactions</p>
+              </CardTitle>
+              <CardDescription>View and manage all {filteredData.length} transactions.</CardDescription>
+            </div>
+            <Button className=" bg-blue-700 text-white" onClick={() => onOpen("AddTransaction")}>
+              Add new
+            </Button>
+          </div>
+        </CardHeader>
+        <CardHeader className="px-7">
           <CardTitle>Transactions</CardTitle>
           <CardDescription>View and manage all {filteredData.length} transactions.</CardDescription>
         </CardHeader>
@@ -140,7 +148,7 @@ export function DataCard() {
                     </p>
                     <p className="flex items-center gap-2">
                       <CalendarDays className=" h-4 w-4" />
-                      {format(item.date, "PP")}
+                      {format(new Date(item.date), "PP")}
                     </p>
                   </CardContent>
                 </Card>
@@ -156,7 +164,7 @@ export function DataCard() {
                     {pageSize} <ChevronDown className="ml-2 h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" value={pageSize}>
+                <DropdownMenuContent align="end">
                   {[5, 10, 20, 30, 40, 50].map((pageSize) => (
                     <DropdownMenuRadioItem
                       key={pageSize}
