@@ -64,19 +64,16 @@ export function FilterAction({ data, setFilteredData }: FilterActionProps) {
     // Apply category filter
     if (filters.category.length > 0) {
       filteredData = filteredData.filter((transaction) => filters.category.includes(transaction.categoryId));
-      console.log(filteredData);
     }
 
     // Apply type filter
     if (filters.type.length > 0) {
       filteredData = filteredData.filter((transaction) => filters.type.includes(transaction.type));
-      console.log(filteredData);
     }
 
     // Apply method filter
     if (filters.method.length > 0) {
       filteredData = filteredData.filter((transaction) => filters.method.includes(transaction.methodCode));
-      console.log(filteredData);
     }
 
     setFilteredData(filteredData);

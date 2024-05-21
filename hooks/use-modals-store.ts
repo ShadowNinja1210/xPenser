@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-export type ModalType = "Feedback" | "AddTransaction" | "AddSavings" | "AddDebt";
+export type ModalType = "Feedback" | "AddTransaction" | "AddSavings" | "AddDebt" | "AddSavingTransaction";
 
 interface ModalStore {
   type: ModalType | null;
@@ -31,5 +31,17 @@ export const useChangeModal = create<ModalStore2>((set) => ({
   change: false,
   setChange: (change: boolean) => {
     set({ change });
+  },
+}));
+
+interface ModalStore3 {
+  isLoaderOn: boolean;
+  setIsLoaderOn: (isLoaded: boolean) => void;
+}
+
+export const useLoaderModal = create<ModalStore3>((set) => ({
+  isLoaderOn: false,
+  setIsLoaderOn: (isLoaderOn: boolean) => {
+    set({ isLoaderOn });
   },
 }));

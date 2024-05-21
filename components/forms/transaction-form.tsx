@@ -69,8 +69,6 @@ function TransactionForm({ onSubmit, form }: TransactionFormProps) {
 
   useEffect(() => {
     fetchData();
-    console.log("form");
-    console.log(form);
   }, []);
 
   useEffect(() => {
@@ -83,6 +81,8 @@ function TransactionForm({ onSubmit, form }: TransactionFormProps) {
   if (!isMounted) {
     return null;
   }
+
+  let i = 0;
 
   return loader ? (
     <Loader />
@@ -222,8 +222,6 @@ function TransactionForm({ onSubmit, form }: TransactionFormProps) {
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0">
                         <Calendar
-                          onCheckedChange={field.onChange}
-                          value={field.value}
                           mode="single"
                           selected={date}
                           onSelect={(e) => {
@@ -252,21 +250,21 @@ function TransactionForm({ onSubmit, form }: TransactionFormProps) {
                 <FormControl>
                   <RadioGroup
                     className="flex items-end space-y-1"
-                    onChange={(e) => {
-                      if (field.value !== e.target.value) {
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      if (field.value === e.target.value) {
                         form.setValue("type", e.target.value);
                       }
                     }}
                   >
                     <FormItem className="flex items-center space-x-3 space-y-0">
                       <FormControl>
-                        <RadioGroupItem value="Expense" />
+                        <RadioGroupItem value="Expense" onClick={() => form.setValue("type", "Expense")} />
                       </FormControl>
                       <FormLabel className="font-normal">Expense</FormLabel>
                     </FormItem>
                     <FormItem className="flex items-center space-x-3 space-y-0">
                       <FormControl>
-                        <RadioGroupItem value="Income" />
+                        <RadioGroupItem value="Income" onClick={() => form.setValue("type", "Income")} />
                       </FormControl>
                       <FormLabel className="font-normal">Income</FormLabel>
                     </FormItem>

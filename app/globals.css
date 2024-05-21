@@ -35,6 +35,23 @@
     --radius: 0.5rem;
   }
 
+  .loading-line {
+    height: 4px;
+    width: 100%;
+    background: linear-gradient(90deg, rgb(3, 28, 60) 0%, rgb(29, 78, 216) 50%, rgb(3, 28, 60) 100%);
+    background-size: 200% 200%;
+    animation: loading 1.5s infinite;
+  }
+
+  @keyframes loading {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+
   .dark {
     --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;

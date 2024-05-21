@@ -3,7 +3,6 @@ import { getWeek, getMonth } from "date-fns";
 
 const transactionMetrics = async () => {
   try {
-    connectDB();
     const res = await fetch("/api/user");
     const fetchedUser = await res.json();
 

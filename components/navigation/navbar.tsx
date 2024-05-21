@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 import Logo from "@/public/Logo.svg";
 import { SquarePlus, ExternalLink } from "lucide-react";
 
-import { useModal } from "@/hooks/use-modals-store";
+import { useModal, useLoaderModal } from "@/hooks/use-modals-store";
 
 import { UserButton } from "@clerk/nextjs";
 import { Help } from "./help-item";
@@ -22,9 +22,10 @@ import {
 
 export default function Navbar() {
   const pathname = usePathname();
-  console.log(pathname);
 
   const { onOpen } = useModal();
+  const { setIsLoaderOn } = useLoaderModal();
+
   const handleAdd = () => {
     if (pathname.includes("/transactions") || pathname.includes("/dashboard")) {
       onOpen("AddTransaction");
@@ -32,6 +33,8 @@ export default function Navbar() {
       onOpen("AddSavings");
     } else if (pathname.includes("/debt")) {
       onOpen("AddDebt");
+    } else {
+      onOpen("AddTransaction");
     }
   };
 
@@ -65,7 +68,13 @@ export default function Navbar() {
       {/* Left */}
       <div>
         <Link href="/">
-          <Image className="dark:mix-blend-normal mix-blend-multiply" src={Logo} width={150} alt="xPenser Logo" />
+          <Image
+            className="dark:mix-blend-normal mix-blend-multiply"
+            src={Logo}
+            width={150}
+            alt="xPenser Logo"
+            priority
+          />
         </Link>
       </div>
 
@@ -77,7 +86,11 @@ export default function Navbar() {
           <ul className="font-medium flex flex-col gap-2 md:gap-0 items-center p-4 md:p-0 border-2 border-neutral-200 rounded-lg bg-white md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-neutral-200 dark:bg-neutral-800 md:dark:bg-neutral-950 dark:border-neutral-700">
             <li>
               <Link
+                prefetch={false}
                 href="/dashboard"
+                onClick={() => {
+                  pathname != "/dashboard" && setIsLoaderOn(true);
+                }}
                 className={`${
                   pathname === "/dashboard" ? "text-blue-700 dark:text-blue-500" : "text-neutral-900 dark:text-white"
                 } text-center py-2 px-3  rounded hover:bg-neutral-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:hover:bg-neutral-700 dark:hover:text-white md:dark:hover:bg-transparent`}
@@ -87,7 +100,11 @@ export default function Navbar() {
             </li>
             <li>
               <Link
+                prefetch={false}
                 href="/transactions"
+                onClick={() => {
+                  pathname != "/transactions" && setIsLoaderOn(true);
+                }}
                 className={`${
                   pathname === "/transactions" ? "text-blue-700 dark:text-blue-500" : "text-neutral-900 dark:text-white"
                 } text-center py-2 px-3  rounded hover:bg-neutral-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:hover:bg-neutral-700 dark:hover:text-white md:dark:hover:bg-transparent`}
@@ -97,7 +114,10 @@ export default function Navbar() {
             </li>
             <li>
               <Link
-                href="#"
+                href="/reports"
+                onClick={() => {
+                  pathname != "/reports" && setIsLoaderOn(true);
+                }}
                 className={` ${
                   pathname === "/reports" ? "text-blue-700 dark:text-blue-500" : "text-neutral-900 dark:text-white"
                 } text-center py-2 px-3 rounded hover:bg-neutral-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:hover:bg-neutral-700 dark:hover:text-white md:dark:hover:bg-transparent`}
@@ -109,11 +129,7 @@ export default function Navbar() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <p
-                    className={`${
-                      pathname === "/savings" || pathname === "/debts"
-                        ? "text-blue-700 dark:text-blue-500"
-                        : "text-neutral-900 dark:text-white"
-                    } cursor-pointer text-center py-2 px-3  rounded hover:bg-neutral-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:hover:bg-neutral-700 dark:hover:text-white md:dark:hover:bg-transparent`}
+                    className={`cursor-pointer text-center py-0 rounded hover:bg-neutral-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:hover:bg-neutral-700 dark:hover:text-white md:dark:hover:bg-transparent`}
                   >
                     Others
                   </p>
@@ -122,6 +138,9 @@ export default function Navbar() {
                   <DropdownMenuItem>
                     <Link
                       href="/savings"
+                      onClick={() => {
+                        pathname != "/savings" && setIsLoaderOn(true);
+                      }}
                       className={`${
                         pathname === "/savings"
                           ? "text-blue-700 dark:text-blue-500"
@@ -133,7 +152,10 @@ export default function Navbar() {
                   </DropdownMenuItem>
                   <DropdownMenuItem>
                     <Link
-                      href="/debt"
+                      href="/debts"
+                      onClick={() => {
+                        pathname != "/debts" && setIsLoaderOn(true);
+                      }}
                       className={`${
                         pathname === "/debts" ? "text-blue-700 dark:text-blue-500" : "text-neutral-900 dark:text-white"
                       } flex items-center justify-between w-full`}

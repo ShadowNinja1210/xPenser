@@ -1,11 +1,18 @@
+"use client";
+
 import Dashboard from "@/components/dashboard/dashboard";
-import { RedirectToSignIn } from "@clerk/nextjs";
-import { currentUser } from "@clerk/nextjs/server";
 
-export default async function Home() {
-  const user = await currentUser();
+import { useLoaderModal } from "@/hooks/use-modals-store";
 
-  // if (!user) return <RedirectToSignIn />;
+export default function Home() {
+  const { setIsLoaderOn, isLoaderOn } = useLoaderModal();
 
-  return <Dashboard />;
+  isLoaderOn && setIsLoaderOn(false);
+
+  return (
+    <>
+      <title>Dashboard</title>
+      <Dashboard />
+    </>
+  );
 }

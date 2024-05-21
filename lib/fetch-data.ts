@@ -1,8 +1,5 @@
-import { connectDB } from "./db";
-
 const transactionData = async () => {
   try {
-    connectDB();
     const res = await fetch("/api/user");
     const fetchedUser = await res.json();
 
@@ -20,7 +17,7 @@ const transactionData = async () => {
       transaction.categoryId = category.name;
     });
 
-    transactions.sort((a: any, b: any) => {
+    transactions?.sort((a: any, b: any) => {
       return new Date(a.date).getTime() - new Date(b.date).getTime();
     });
 
@@ -38,17 +35,48 @@ const transactionData = async () => {
 
 const savingsData = async () => {
   try {
-    connectDB();
     const res = await fetch("/api/user");
     const fetchedUser = await res.json();
 
     const response = await fetch(`/api/savings/${fetchedUser.userId}`);
     const savings = await response.json();
 
-    return savings;
+    const sourceMetrics = new Map<string, number>();
+    savings.forEach((goal: any) => {
+      if (sourceMetrics.has(goal.source)) {
+        sourceMetrics.set(goal.source, sourceMetrics.get(goal.source)! + goal.achieved);
+      } else {
+        sourceMetrics.set(goal.source, goal.achieved);
+      }
+    });
+    const sourceMetricsArray = Array.from(sourceMetrics, ([source, achieved]) => ({ source, achieved }));
+
+    return { savings, sourceMetricsArray };
   } catch (error) {
     console.error(error);
   }
 };
 
-export { transactionData, savingsData };
+const savingsTransactionsData = async (savingId: string) => {
+  try {
+    const res = await fetch("/api/user");
+    const fetchedUser = await res.json();
+
+    const savingGoals = await fetch(`/api/savings/${fetchedUser.userId}`);
+    const savings = await savingGoals.json();
+
+    const saving = savings.find((saving: any) => saving._id === savingId);
+
+    const response = await fetch(`/api/savings/${fetchedUser.userId}/transactions/${savingId}`);
+    let transactions = await response.json();
+    transactions?.sort((a: any, b: any) => {
+      return new Date(a.date).getTime() - new Date(b.date).getTime();
+    });
+
+    return { transactions, saving };
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export { transactionData, savingsData, savingsTransactionsData };

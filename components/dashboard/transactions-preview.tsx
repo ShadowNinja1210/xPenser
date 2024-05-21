@@ -8,6 +8,7 @@ import { ExternalLink } from "lucide-react";
 
 import { CardContent, Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useLoaderModal } from "@/hooks/use-modals-store";
 
 export type ICategory = {
   name: string;
@@ -30,6 +31,8 @@ export default function TransactionsPreview() {
   const [data, setData] = useState<TransactionData[]>([]);
   const [loaderOn, setLoaderOn] = useState(true);
 
+  const { setIsLoaderOn } = useLoaderModal();
+
   useEffect(() => {
     setLoaderOn(true);
     const fetchData = async () => {
@@ -45,7 +48,7 @@ export default function TransactionsPreview() {
       <CardHeader className="px-7 ">
         <CardTitle className="flex items-center justify-between">
           Transactions
-          <Link href="/transactions">
+          <Link href="/transactions" onClick={() => setIsLoaderOn(true)}>
             <Button
               size="sm"
               variant="outline"

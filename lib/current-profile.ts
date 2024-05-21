@@ -3,8 +3,8 @@ import { auth } from "@clerk/nextjs/server";
 import { connectDB } from "./db";
 
 const currentProfile = async () => {
-  const { userId } = auth();
   connectDB();
+  const { userId } = auth();
 
   if (!userId) return null;
 

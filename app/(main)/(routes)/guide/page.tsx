@@ -1,16 +1,15 @@
 "use client";
 
-import Savings from "@/components/savings/savings";
 import { useLoaderModal } from "@/hooks/use-modals-store";
 
-export default function SavingsPage() {
+export default function GuidePage() {
   const { setIsLoaderOn, isLoaderOn } = useLoaderModal();
 
   isLoaderOn && setIsLoaderOn(false);
   return (
-    <main className="md:px-10 px-4">
-      <title>Saving</title>
-      <Savings />
-    </main>
+    <div>
+      <title>Guide</title>
+      <h1>Guide</h1>
+    </div>
   );
 }

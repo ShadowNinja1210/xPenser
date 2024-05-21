@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { formatNum } from "@/lib/function-lib";
 
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ import { CardContent, Card, CardDescription, CardFooter, CardHeader, CardTitle }
 import TransactionsPreview from "./transactions-preview";
 import SideDash from "./side-dash";
 import { transactionMetrics } from "@/lib/fetch-metrics";
+import { Loader } from "../loaders/loader";
 
 export type ICategory = {
   name: string;

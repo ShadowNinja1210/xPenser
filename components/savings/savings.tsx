@@ -6,11 +6,17 @@ import mongoose from "mongoose";
 
 import { savingsData } from "@/lib/fetch-data";
 import { formatNum } from "@/lib/function-lib";
+import { useLoaderModal, useModal } from "@/hooks/use-modals-store";
 
 import { ProgressCircle } from "@tremor/react";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+
+import { Landmark } from "lucide-react";
+import SavingsSideDash from "@/components/savings/savings-side-dash";
 
 // const savings = [
 //   {
@@ -109,21 +115,22 @@ interface ISavingsGoal extends Document {
 export default function Savings() {
   const [savings, setSavings] = useState<ISavingsGoal[]>([]);
   const [filteredData, setFilteredData] = useState<ISavingsGoal[]>([]);
+  const [loaderOn, setLoaderOn] = useState(true);
+
+  const { onOpen } = useModal();
+  const { setIsLoaderOn } = useLoaderModal();
 
   useEffect(() => {
     const fetchSavings = async () => {
+      setLoaderOn(true);
       const data = await savingsData();
-      console.log(data);
-      setSavings(data);
-      setFilteredData(data);
+      setSavings(data?.savings);
+      setFilteredData(data?.savings);
     };
 
     fetchSavings();
+    setLoaderOn(false);
   }, []);
-
-  const handleCardClick = (id: string) => {
-    console.log("Card Clicked", id);
-  };
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
@@ -137,52 +144,80 @@ export default function Savings() {
   };
 
   return (
-    <>
+    <section className=" w-full">
       <div className="flex items-center justify-between py-4">
         <Input
           placeholder="Search for transaction..."
           onChange={(event) => handleSearch(event)}
           className=" max-w-60 md:max-w-sm dark:bg-neutral-950"
         />
-        <div className="space-x-2">{/* <FilterAction data={data} setFilteredData={setFilteredData} /> */}</div>
       </div>
-      <Card>
-        <CardHeader>
-          <CardTitle>Savings</CardTitle>
-          <CardDescription>Track your saving goals and transactions.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="rounded-md grid gap-4 grid-cols-[repeat(auto-fill,minmax(320px,1fr))] grid-flow-row justify-items-center items-center">
-            {filteredData.map((saving, index) => (
-              <Link key={index} href={`/savings/${saving._id.toString()}`}>
-                <Card className=" min-w-80 w-full max-w-[400px] cursor-pointer">
-                  <CardHeader className="pb-2">
-                    <CardTitle className=" text-xl">{saving.name}</CardTitle>
-                    <CardDescription>{saving.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent className="flex items-end justify-between">
-                    <div>
-                      <p>Goal: ₹ {formatNum(Number(saving.targetAmount))}</p>
-                      <p>Achieved: ₹ {formatNum(Number(saving.achieved))}</p>
-                    </div>
-                    <div>
-                      <ProgressCircle
-                        value={Math.floor((Number(saving.achieved) / Number(saving.targetAmount)) * 100)}
-                        size="md"
-                        showAnimation
-                      >
-                        <span className="text-sm font-medium text-white">
-                          {Math.floor((Number(saving.achieved) / Number(saving.targetAmount)) * 100)}%
-                        </span>
-                      </ProgressCircle>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    </>
+
+      <div className="grid items-start gap-4 md:gap-8 xl:grid-cols-[minmax(320px,7fr)_minmax(200px,2fr)] lg:grid-cols-[minmax(320px,4fr)_minmax(200px,2fr)]">
+        <Card>
+          <CardHeader>
+            <div className="flex justify-between items-center">
+              <div>
+                <CardTitle>Savings</CardTitle>
+                <CardDescription>Track your saving goals and transactions.</CardDescription>
+              </div>
+              <Button className=" bg-blue-700 text-white hover:bg-blue-800" onClick={() => onOpen("AddSavings")}>
+                Add new
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="rounded-md grid gap-4 grid-cols-[repeat(auto-fill,minmax(320px,1fr))] grid-flow-row justify-items-center items-center">
+              {loaderOn ? (
+                <>
+                  <Skeleton className="min-w-80 w-full max-w-[400px] h-[201px]" />
+                  <Skeleton className="min-w-80 w-full max-w-[400px] h-[201px]" />
+                  <Skeleton className="min-w-80 w-full max-w-[400px] h-[201px]" />
+                  <Skeleton className="min-w-80 w-full max-w-[400px] h-[201px]" />
+                  <Skeleton className="min-w-80 w-full max-w-[400px] h-[201px]" />
+                  <Skeleton className="min-w-80 w-full max-w-[400px] h-[201px]" />
+                  <Skeleton className="min-w-80 w-full max-w-[400px] h-[201px]" />
+                  <Skeleton className="min-w-80 w-full max-w-[400px] h-[201px]" />
+                </>
+              ) : (
+                filteredData.map((saving, index) => (
+                  <Link key={index} href={`/savings/${saving._id.toString()}`} onClick={() => setIsLoaderOn(true)}>
+                    <Card className=" min-w-80 w-full max-w-[400px] cursor-pointer">
+                      <CardHeader className="pb-2">
+                        <CardTitle className=" text-xl">{saving.name}</CardTitle>
+                        <CardDescription>{saving.description}</CardDescription>
+                      </CardHeader>
+                      <CardContent className="flex items-end justify-between pb-2">
+                        <div>
+                          <p>Goal: ₹ {formatNum(Number(saving.targetAmount))}</p>
+                          <p>Achieved: ₹ {formatNum(Number(saving.achieved))}</p>
+                        </div>
+                        <div>
+                          <ProgressCircle
+                            value={Math.floor((Number(saving.achieved) / Number(saving.targetAmount)) * 100)}
+                            size="md"
+                            showAnimation
+                          >
+                            <span className="text-sm font-medium dark:text-white">
+                              {Math.floor((Number(saving.achieved) / Number(saving.targetAmount)) * 100)}%
+                            </span>
+                          </ProgressCircle>
+                        </div>
+                      </CardContent>
+                      <CardFooter className="text-xs py-1 bg-neutral-100 dark:bg-neutral-600 rounded-[0px_0px_5px_5px] flex items-center justify-center gap-1">
+                        <Landmark className=" h-3.5 w-3.5" /> <span className="mt-[2px]">{saving.source}</span>
+                      </CardFooter>
+                    </Card>
+                  </Link>
+                ))
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Side Dashboard for savings */}
+        <SavingsSideDash savings={savings} />
+      </div>
+    </section>
   );
 }

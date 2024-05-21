@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import { useState, useEffect } from "react";
 import * as _ from "lodash";
 import {
   Column,
@@ -27,20 +27,16 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
 } from "@/components/ui/dropdown-menu";
-import { transactionData } from "@/lib/fetch-data";
+import { savingsTransactionsData } from "@/lib/fetch-data";
 import { Badge } from "../ui/badge";
 import { format } from "date-fns";
 import { Skeleton } from "../ui/skeleton";
 import { useChangeModal, useModal } from "@/hooks/use-modals-store";
 import { ActionTooltip } from "../action-tool-tip";
-import { FilterAction } from "./filter-action";
 
 declare module "@tanstack/react-table" {
   interface ColumnMeta<TData extends RowData, TValue> {
@@ -48,63 +44,15 @@ declare module "@tanstack/react-table" {
   }
 }
 
-export type ICategory = {
-  name: string;
-  description?: string;
-  type: "Expense" | "Income";
-};
-
-export type TransactionData = {
-  id: string;
-  userId: string;
+export type SavingsTransactions = {
+  _id: string;
   amount: number;
-  type: "Expense" | "Income";
-  categoryId: string;
+  type: "Deposit" | "Withdrawalal";
   description: string;
-  date: string;
-  methodCode: string;
+  date: Date;
 };
 
-function Filter({ column }: { column: Column<any, unknown> }) {
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="ml-auto">
-          Type <ChevronDown className="ml-2 h-4 w-4" />
-        </Button>
-      </DropdownMenuTrigger>
-
-      <DropdownMenuContent defaultValue={""} align="end">
-        <DropdownMenuRadioGroup value={column.getFilterValue() as string} onValueChange={column.setFilterValue}>
-          <DropdownMenuRadioItem value="">Both</DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value="expense">Expense</DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value="income">Income</DropdownMenuRadioItem>
-        </DropdownMenuRadioGroup>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
-}
-
-export const columns: ColumnDef<TransactionData>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
+export const columns: ColumnDef<SavingsTransactions>[] = [
   {
     accessorKey: "amount",
     header: () => {
@@ -113,8 +61,8 @@ export const columns: ColumnDef<TransactionData>[] = [
     cell: ({ row }) => {
       const type = row.getValue("type");
       return (
-        <div className={` whitespace-nowrap ${type === "Expense" ? "text-red-500" : "text-green-500"} `}>
-          {(type === "Expense" ? "-" : "+") + "₹" + row.getValue("amount")}
+        <div className={` whitespace-nowrap ${type === "Withdrawal" ? "text-red-500" : "text-green-500"} `}>
+          {(type === "Withdrawal" ? "-" : "+") + "₹" + row.getValue("amount")}
         </div>
       );
     },
@@ -122,24 +70,14 @@ export const columns: ColumnDef<TransactionData>[] = [
   {
     id: "type",
     accessorKey: "type",
-    header: ({ column }) => {
-      return <Filter column={column} />;
+    header: () => {
+      return <div>Filter</div>;
     },
     cell: ({ row }) => (
-      <Badge className={row.getValue("type") == "Expense" ? "bg-red-500" : " bg-green-500"}>
+      <Badge className={row.getValue("type") == "Withdrawal" ? "bg-red-500" : " bg-green-500"}>
         {row.getValue("type")}
       </Badge>
     ),
-  },
-  {
-    accessorKey: "categoryId",
-    header: () => <div className="text-left">Category</div>,
-    cell: ({ row }) => <div className="">{row.getValue("categoryId")}</div>,
-  },
-  {
-    accessorKey: "methodCode",
-    header: () => <div className="text-left">Method</div>,
-    cell: ({ row }) => <div className="">{row.getValue("methodCode")}</div>,
   },
   {
     accessorKey: "description",
@@ -168,7 +106,7 @@ export const columns: ColumnDef<TransactionData>[] = [
 
       return (
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
+          {/* <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-8 w-8 p-0">
               <span className="sr-only">Open menu</span>
               <MoreHorizontal className="h-4 w-4" />
@@ -182,37 +120,38 @@ export const columns: ColumnDef<TransactionData>[] = [
             <DropdownMenuSeparator />
             <DropdownMenuItem>View customer</DropdownMenuItem>
             <DropdownMenuItem>View payment details</DropdownMenuItem>
-          </DropdownMenuContent>
+          </DropdownMenuContent> */}
         </DropdownMenu>
       );
     },
   },
 ];
 
-export function DataTable() {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
-  const [pagination, setPagination] = React.useState({
+export function SavingTable({ savingId }: { savingId: string }) {
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = useState({});
+  const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 10,
   });
-  const [data, setData] = React.useState<TransactionData[]>([]);
-  const [filteredData, setFilteredData] = React.useState<TransactionData[]>([]);
-  const [loaderOn, setLoaderOn] = React.useState(true);
+  const [filteredData, setFilteredData] = useState<SavingsTransactions[]>([]);
+  const [loaderOn, setLoaderOn] = useState(true);
+  const [savingGoalName, setSavingGoalName] = useState("");
 
   const { change } = useChangeModal();
   const { onOpen } = useModal();
 
-  React.useEffect(() => {
+  useEffect(() => {
     setLoaderOn(true);
     const fetchData = async () => {
-      const data = await transactionData();
-      setData(data?.transactions);
+      const data = await savingsTransactionsData(savingId);
+      setFilteredData(data?.transactions);
+      setSavingGoalName(data?.saving?.name);
       setLoaderOn(false);
     };
-    fetchData();
+    if (savingId != "" || savingId != undefined) fetchData();
   }, [change]);
 
   const table = useReactTable({
@@ -252,54 +191,29 @@ export function DataTable() {
 
   return (
     <div className="w-full">
-      <div className="flex items-center justify-between py-4">
+      <div className="py-4">
         <Input
           placeholder="Search for transaction..."
           value={(table.getColumn("description")?.getFilterValue() as string) ?? ""}
           onChange={(event) => table.getColumn("description")?.setFilterValue(event.target.value)}
           className="max-w-sm dark:bg-neutral-950 dark:border-neutral-600"
         />
-        <div className="space-x-2">
-          <FilterAction data={data} setFilteredData={setFilteredData} />
-
-          {/* Column button for changing the visibility of columns ------||------ Disabled for now  */}
-          {/* <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="ml-auto dark:bg-neutral-900">
-                Columns <ChevronDown className="ml-2 h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => {
-                  if (column.id != "type")
-                    return (
-                      <DropdownMenuCheckboxItem
-                        key={column.id}
-                        className="capitalize"
-                        checked={column.getIsVisible()}
-                        onCheckedChange={(value) => column.toggleVisibility(!!value)}
-                      >
-                        {column.id === "methodCode" ? "Method" : column.id === "categoryId" ? "Category" : column.id}
-                      </DropdownMenuCheckboxItem>
-                    );
-                })}
-            </DropdownMenuContent>
-          </DropdownMenu> */}
-        </div>
       </div>
       <Card x-chunk="dashboard-05-chunk-3">
         <CardHeader className="px-7">
           <div className="flex justify-between items-center">
             <div>
               <CardTitle>
-                <p>Transactions</p>
+                <p>{savingGoalName}</p>
               </CardTitle>
-              <CardDescription>View and manage all {filteredData.length} transactions.</CardDescription>
+              <CardDescription>View and manage all {filteredData.length} Saving transactions.</CardDescription>
             </div>
-            <Button className=" bg-blue-700 text-white hover:bg-blue-800" onClick={() => onOpen("AddTransaction")}>
+            <Button
+              className=" bg-blue-700 text-white hover:bg-blue-800"
+              onClick={() => {
+                onOpen("AddSavingTransaction");
+              }}
+            >
               Add new
             </Button>
           </div>
