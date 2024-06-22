@@ -27,9 +27,10 @@ interface IUser extends Document {
 interface TransactionFormProps {
   onSubmit: Function;
   form: any;
+  formType: string;
 }
 
-function SavingsForm({ onSubmit, form }: TransactionFormProps) {
+function SavingsForm({ onSubmit, form, formType }: TransactionFormProps) {
   const [isMounted, setIsMounted] = useState(false);
   const [nameLength, setNameLength] = useState(0);
   const [descriptionLength, setDescriptionLength] = useState(0);

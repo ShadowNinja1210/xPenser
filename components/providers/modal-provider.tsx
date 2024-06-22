@@ -1,11 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Feedback } from "@/components/modals/feedback-form";
-import AddTransactions from "@/components/modals/add-transactions";
-import Savings from "@/components/modals/add-savings";
-import Debt from "@/components/modals/add-debt";
-import AddSavingTransactions from "../modals/saving-transactions-modal";
+import {
+  Feedback,
+  AddTransactions,
+  AddSavingTransactions,
+  EditTransaction,
+  AddSavings,
+  EditSavings,
+  AddDebt,
+  SavingTransactionsModal,
+} from "@/components/modals";
 
 export const ModalProvider = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -20,11 +25,14 @@ export const ModalProvider = () => {
 
   return (
     <>
-      <Feedback />
-      <AddTransactions />
-      <Savings />
-      <Debt />
+      <AddDebt />
+      <AddSavings />
       <AddSavingTransactions />
+      <AddTransactions />
+      <EditSavings />
+      <EditTransaction />
+      <Feedback />
+      <SavingTransactionsModal />
     </>
   );
 };

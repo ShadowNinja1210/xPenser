@@ -24,35 +24,21 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
 import { Loader } from "../loaders/loader";
-
-interface ICategory {
-  _id: object;
-  name: string;
-  description?: string;
-  type: "Expense" | "Income";
-}
-
-interface IUser extends Document {
-  userId: string;
-  email: string;
-  name: string;
-  profilePicture?: string;
-  methods: { _id: string; code: string; name: string }[];
-  categories: ICategory[];
-}
+import { TransactionData, IUser } from "@/lib/types";
 
 interface TransactionFormProps {
   onSubmit: Function;
   form: any;
+  editData?: TransactionData;
+  formType: "Add" | "Edit";
 }
 
-function TransactionForm({ onSubmit, form }: TransactionFormProps) {
-  const today = new Date();
+function TransactionForm({ onSubmit, form, editData, formType }: TransactionFormProps) {
   const [isMounted, setIsMounted] = useState(false);
-  const [categorySelected, setCategorySelected] = useState("");
+  const [categorySelected, setCategorySelected] = useState(editData?.categoryId || "");
   const [loader, setLoader] = useState(true);
-  const [methodSelected, setMethodSelected] = useState("");
-  const [date, setDate] = useState<Date>(today);
+  const [methodSelected, setMethodSelected] = useState(editData?.methodCode || "");
+  const [date, setDate] = useState<Date>(editData?.date ? new Date(editData.date) : new Date());
 
   const [profile, setProfile] = useState<IUser>({});
 
@@ -68,6 +54,17 @@ function TransactionForm({ onSubmit, form }: TransactionFormProps) {
   };
 
   useEffect(() => {
+    if (editData) {
+      form.setValue("amount", editData.amount);
+      form.setValue("category", editData.categoryId);
+      form.setValue("method", editData.methodCode);
+      form.setValue("date", new Date(editData.date));
+      form.setValue("type", editData.type);
+      form.setValue("description", editData.description);
+    }
+  }, [editData]);
+
+  useEffect(() => {
     fetchData();
   }, []);
 
@@ -81,8 +78,6 @@ function TransactionForm({ onSubmit, form }: TransactionFormProps) {
   if (!isMounted) {
     return null;
   }
-
-  let i = 0;
 
   return loader ? (
     <Loader />
@@ -100,7 +95,7 @@ function TransactionForm({ onSubmit, form }: TransactionFormProps) {
                   <FormLabel className="uppercase text-xs font-bold">Amount</FormLabel>
                   <FormControl>
                     <Input
-                      value={field.value}
+                      value={field.value || editData?.amount}
                       onChange={(e) => form.setValue("amount", parseInt(e.target.value))}
                       type="number"
                       className=" border-2 w-[160px] focus-visible:ring-1 dark:text-white focus-visible:ring-offset-2"
@@ -229,7 +224,7 @@ function TransactionForm({ onSubmit, form }: TransactionFormProps) {
                             form.setValue("date", e);
                           }}
                           initialFocus
-                          disabled={(date: Date) => date > new Date() || date < new Date("1900-01-01")}
+                          disabled={(date: Date) => date > new Date() || date < new Date("2023-01-01")}
                         />
                       </PopoverContent>
                     </Popover>
@@ -249,6 +244,7 @@ function TransactionForm({ onSubmit, form }: TransactionFormProps) {
                 <FormLabel>Transaction Type</FormLabel>
                 <FormControl>
                   <RadioGroup
+                    defaultValue={field.value || editData?.type}
                     className="flex items-end space-y-1"
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                       if (field.value === e.target.value) {
@@ -283,7 +279,11 @@ function TransactionForm({ onSubmit, form }: TransactionFormProps) {
               <FormItem className="flex flex-col items-start">
                 <FormLabel className="uppercase text-xs font-bold ">Description</FormLabel>
                 <FormControl>
-                  <Textarea placeholder="Add the description for the transaction..." {...field} />
+                  <Textarea
+                    placeholder="Add the description for the transaction..."
+                    value={field.value || editData?.description}
+                    onChange={(e) => form.setValue("description", e.target.value)}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -292,7 +292,7 @@ function TransactionForm({ onSubmit, form }: TransactionFormProps) {
         </div>
         <DialogFooter>
           <Button variant="outline" className=" bg-blue-700 hover:bg-blue-900 text-white" disabled={isLoading}>
-            Submit
+            {formType === "Edit" ? "Save" : "Add"}
           </Button>
         </DialogFooter>
       </form>

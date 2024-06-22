@@ -18,23 +18,28 @@ const formSchema = z.object({
   method: z.string().min(1, { message: "Payment method is required" }),
 });
 
-export default function AddTransactions() {
+export default function EditTransaction() {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  const { change, setChange } = useChangeModal();
-
   const router = useRouter();
+
+  const { isOpen, onClose, type, editData, setEditData } = useModal();
+  const { change, setChange } = useChangeModal();
+  const isModalOpen = isOpen && type === "EditTransaction";
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      category: "",
-      description: "",
-      method: "",
+      category: editData?.category,
+      description: editData?.description,
+      method: editData?.method,
+      type: editData?.type,
+      amount: editData?.amount,
+      date: editData?.date,
     },
   });
 
@@ -44,21 +49,24 @@ export default function AddTransactions() {
       const user = await res.json();
       const userId = user.userId;
 
-      const response = await fetch(`/api/transaction/${userId}/new`, {
-        method: "POST",
+      const data = { ...values, _id: editData._id };
+
+      const response = await fetch(`/api/transaction/${userId}`, {
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(values),
+        body: JSON.stringify(data),
       });
 
       if (!response.ok) {
-        throw new Error("Failed to add transaction");
+        throw new Error("Failed to edit transaction");
       } else {
         form.reset();
         setChange(!change);
         router.refresh();
         onClose();
+        setEditData({});
       }
     } catch (e) {
       console.error(e);
@@ -70,10 +78,6 @@ export default function AddTransactions() {
     onClose();
   };
 
-  const { isOpen, onClose, type } = useModal();
-
-  const isModalOpen = isOpen && type === "AddTransaction";
-
   if (!isMounted) {
     return null;
   }
@@ -82,10 +86,10 @@ export default function AddTransactions() {
     <Dialog open={isModalOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>New transaction</DialogTitle>
-          <DialogDescription>Add the details for new transaction.</DialogDescription>
+          <DialogTitle>Edit transaction</DialogTitle>
+          <DialogDescription>Edit the details for the transaction.</DialogDescription>
         </DialogHeader>
-        <TransactionForm form={form} onSubmit={onSubmit} formType="Add" />
+        <TransactionForm form={form} onSubmit={onSubmit} editData={editData} formType="Edit" />
       </DialogContent>
     </Dialog>
   );

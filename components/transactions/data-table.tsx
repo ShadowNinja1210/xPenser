@@ -3,21 +3,15 @@
 import * as React from "react";
 import * as _ from "lodash";
 import {
-  Column,
   ColumnDef,
-  ColumnFiltersState,
-  RowData,
-  SortingState,
-  VisibilityState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
-  getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 
-import { ChevronDown, MoreHorizontal } from "lucide-react";
+import { ChevronDown, Copy, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -31,61 +25,40 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
 } from "@/components/ui/dropdown-menu";
 import { transactionData } from "@/lib/fetch-data";
-import { Badge } from "../ui/badge";
 import { format } from "date-fns";
 import { Skeleton } from "../ui/skeleton";
 import { useChangeModal, useModal } from "@/hooks/use-modals-store";
 import { ActionTooltip } from "../action-tool-tip";
 import { FilterAction } from "./filter-action";
+import { TransactionData } from "@/lib/types";
 
-declare module "@tanstack/react-table" {
-  interface ColumnMeta<TData extends RowData, TValue> {
-    filterVariant?: "range" | "select";
+// Function to copy transaction details to clipboard (Used in action button of each row)
+const copyTransaction = (transaction: TransactionData) => {
+  const formattedTransaction = `
+Amount: ${transaction.amount}
+Type: ${transaction.type}
+Category: ${transaction.categoryId}
+Description: ${transaction.description}
+Date: ${format(new Date(transaction.date), "PP")}
+Method: ${transaction.methodCode}
+  `;
+
+  try {
+    navigator.clipboard.writeText(formattedTransaction);
+  } catch (error) {
+    console.error("Failed to copy text", error);
   }
-}
-
-export type ICategory = {
-  name: string;
-  description?: string;
-  type: "Expense" | "Income";
 };
 
-export type TransactionData = {
-  id: string;
-  userId: string;
-  amount: number;
-  type: "Expense" | "Income";
-  categoryId: string;
-  description: string;
-  date: string;
-  methodCode: string;
-};
-
-function Filter({ column }: { column: Column<any, unknown> }) {
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="ml-auto">
-          Type <ChevronDown className="ml-2 h-4 w-4" />
-        </Button>
-      </DropdownMenuTrigger>
-
-      <DropdownMenuContent defaultValue={""} align="end">
-        <DropdownMenuRadioGroup value={column.getFilterValue() as string} onValueChange={column.setFilterValue}>
-          <DropdownMenuRadioItem value="">Both</DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value="expense">Expense</DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value="income">Income</DropdownMenuRadioItem>
-        </DropdownMenuRadioGroup>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
-}
+// Declaration of functions to delete and edit transactions (Used in action button of each row)
+let deleteTransaction: (ids: string[], userId: string) => Promise<void>;
+let editTransaction: (transaction: TransactionData) => Promise<void>;
 
 export const columns: ColumnDef<TransactionData>[] = [
+  // Select Checkboxes Column
   {
     id: "select",
     header: ({ table }) => (
@@ -105,13 +78,15 @@ export const columns: ColumnDef<TransactionData>[] = [
     enableSorting: false,
     enableHiding: false,
   },
+
+  // Amount Column
   {
     accessorKey: "amount",
     header: () => {
       return <div>Amount</div>;
     },
     cell: ({ row }) => {
-      const type = row.getValue("type");
+      const type = row.original.type;
       return (
         <div className={` whitespace-nowrap ${type === "Expense" ? "text-red-500" : "text-green-500"} `}>
           {(type === "Expense" ? "-" : "+") + "₹" + row.getValue("amount")}
@@ -119,28 +94,22 @@ export const columns: ColumnDef<TransactionData>[] = [
       );
     },
   },
-  {
-    id: "type",
-    accessorKey: "type",
-    header: ({ column }) => {
-      return <Filter column={column} />;
-    },
-    cell: ({ row }) => (
-      <Badge className={row.getValue("type") == "Expense" ? "bg-red-500" : " bg-green-500"}>
-        {row.getValue("type")}
-      </Badge>
-    ),
-  },
+
+  // Category Column
   {
     accessorKey: "categoryId",
     header: () => <div className="text-left">Category</div>,
     cell: ({ row }) => <div className="">{row.getValue("categoryId")}</div>,
   },
+
+  // Method Column
   {
     accessorKey: "methodCode",
     header: () => <div className="text-left">Method</div>,
     cell: ({ row }) => <div className="">{row.getValue("methodCode")}</div>,
   },
+
+  // Description Column
   {
     accessorKey: "description",
     header: () => <div className="text-left">Description</div>,
@@ -155,16 +124,20 @@ export const columns: ColumnDef<TransactionData>[] = [
       </ActionTooltip>
     ),
   },
+
+  // Date Column
   {
     accessorKey: "date",
     header: () => <div>Date</div>,
     cell: ({ row }) => <div>{format(row.getValue("date"), "PP")}</div>,
   },
+
+  // Actions Column
   {
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const payment = row.original;
+      const transaction = row.original;
 
       return (
         <DropdownMenu>
@@ -176,12 +149,34 @@ export const columns: ColumnDef<TransactionData>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => navigator.clipboard.writeText(payment.id)}>
-              Copy payment ID
+
+            {/* Edit Button */}
+            <DropdownMenuItem
+              onClick={() => editTransaction(transaction)}
+              className="flex gap-2 items-center cursor-pointer"
+            >
+              <Pencil width={16} />
+              Edit
+            </DropdownMenuItem>
+
+            {/* Copy Button */}
+            <DropdownMenuItem
+              onClick={() => copyTransaction(transaction)}
+              className="flex gap-2 items-center cursor-pointer"
+            >
+              <Copy width={16} />
+              Copy
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
+
+            {/* Delete Button  */}
+            <DropdownMenuItem
+              onClick={() => deleteTransaction([transaction._id], transaction.userId)}
+              className=" text-red-500 flex gap-2 items-center hover:text-red-400 cursor-pointer"
+            >
+              <Trash2 width={16} />
+              Delete
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -190,10 +185,6 @@ export const columns: ColumnDef<TransactionData>[] = [
 ];
 
 export function DataTable() {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
   const [pagination, setPagination] = React.useState({
     pageIndex: 0,
     pageSize: 10,
@@ -202,9 +193,10 @@ export function DataTable() {
   const [filteredData, setFilteredData] = React.useState<TransactionData[]>([]);
   const [loaderOn, setLoaderOn] = React.useState(true);
 
-  const { change } = useChangeModal();
-  const { onOpen } = useModal();
+  const { change } = useChangeModal(); // Used to refresh data after transaction is added
+  const { onOpen, setEditData } = useModal(); // Used to open modal for editing/adding transaction
 
+  // Fetch data from API every time change is made i.e. transaction is added
   React.useEffect(() => {
     setLoaderOn(true);
     const fetchData = async () => {
@@ -218,29 +210,90 @@ export function DataTable() {
   const table = useReactTable({
     data: filteredData,
     columns,
-    initialState: {
-      columnVisibility: {
-        type: false,
-      },
-    },
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
     onPaginationChange: setPagination,
     state: {
       pagination,
-      sorting,
-      columnFilters,
-      columnVisibility,
-      rowSelection,
     },
   });
 
+  // Delete function for single transaction (Used in action button of each row)
+  deleteTransaction = async (ids: string[], userId: string) => {
+    const body = { ids: ids };
+    try {
+      const res = await fetch("/api/user");
+      const fetchedUser = await res.json();
+
+      if (fetchedUser.userId != userId) {
+        console.error("Unauthorized");
+        return;
+      }
+
+      const response = await fetch(`/api/transaction/${userId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      });
+
+      if (response.status !== 200) {
+        throw new Error(response.statusText);
+      } else {
+        const newTransactions = data.filter((transaction) => !ids.includes(transaction._id));
+        setFilteredData(newTransactions);
+      }
+    } catch (error) {
+      console.error("Failed to delete transaction", error);
+    }
+  };
+
+  // Edit function for transaction (Used in action button of each row)
+  editTransaction = async (transaction: TransactionData) => {
+    setEditData(transaction);
+    onOpen("EditTransaction");
+  };
+
+  // Delete function for multiple transactions (Used in delete button)
+  const deleteTransactions = async () => {
+    const selectedRows = table.getSelectedRowModel().rows;
+    const ids = selectedRows.map((row) => row.original._id);
+    const userId = selectedRows[0].original.userId;
+    console.log("Deleting", ids, " for ", userId);
+
+    const body = { ids: ids };
+    try {
+      const res = await fetch("/api/user");
+      const fetchedUser = await res.json();
+
+      if (fetchedUser.userId != userId) {
+        console.error("Unauthorized");
+        return;
+      }
+
+      const response = await fetch(`/api/transaction/${userId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      });
+
+      if (response.status !== 200) {
+        throw new Error(response.statusText);
+      } else {
+        const newTransactions = data.filter((transaction) => !ids.includes(transaction._id));
+        setFilteredData(newTransactions);
+        table.toggleAllPageRowsSelected(false);
+      }
+    } catch (error) {
+      console.error("Failed to delete transaction", error);
+    }
+  };
+
+  // Function to calculate number of rows visible (Used in pagination)
   const calcRowShowed = (pageIndex: number, pageSize: number, pageCount: number) => {
     if (pageIndex === 0 && pageCount === 1) return table.getFilteredRowModel().rows.length;
     else {
@@ -261,33 +314,6 @@ export function DataTable() {
         />
         <div className="space-x-2">
           <FilterAction data={data} setFilteredData={setFilteredData} />
-
-          {/* Column button for changing the visibility of columns ------||------ Disabled for now  */}
-          {/* <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="ml-auto dark:bg-neutral-900">
-                Columns <ChevronDown className="ml-2 h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => {
-                  if (column.id != "type")
-                    return (
-                      <DropdownMenuCheckboxItem
-                        key={column.id}
-                        className="capitalize"
-                        checked={column.getIsVisible()}
-                        onCheckedChange={(value) => column.toggleVisibility(!!value)}
-                      >
-                        {column.id === "methodCode" ? "Method" : column.id === "categoryId" ? "Category" : column.id}
-                      </DropdownMenuCheckboxItem>
-                    );
-                })}
-            </DropdownMenuContent>
-          </DropdownMenu> */}
         </div>
       </div>
       <Card x-chunk="dashboard-05-chunk-3">
@@ -299,9 +325,19 @@ export function DataTable() {
               </CardTitle>
               <CardDescription>View and manage all {filteredData.length} transactions.</CardDescription>
             </div>
-            <Button className=" bg-blue-700 text-white hover:bg-blue-800" onClick={() => onOpen("AddTransaction")}>
-              Add new
-            </Button>
+            <div className=" flex gap-2 items-center">
+              <Button className=" bg-blue-700 text-white hover:bg-blue-800" onClick={() => onOpen("AddTransaction")}>
+                Add new
+              </Button>
+              <Button
+                className="gap-2 text-white bg-red-600 dark:bg-red-700 active:bg-red-900 hover:bg-red-800"
+                variant="outline"
+                onClick={deleteTransactions}
+              >
+                <Trash2 className=" h-6 w-6" />
+                Delete
+              </Button>
+            </div>
           </div>
         </CardHeader>
         <CardContent>
@@ -310,15 +346,11 @@ export function DataTable() {
               <TableHeader className="dark:bg-neutral-950 dark:hover:bg-neutral-950 ">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id} className="dark:hover:bg-neutral-950">
-                    {headerGroup.headers.map((header) => {
-                      return header.id != "type" ? (
-                        <TableHead key={header.id} className="dark:hover:bg-neutral-950">
-                          {header.isPlaceholder
-                            ? null
-                            : flexRender(header.column.columnDef.header, header.getContext())}
-                        </TableHead>
-                      ) : null;
-                    })}
+                    {headerGroup.headers.map((header) => (
+                      <TableHead key={header.id} className="dark:hover:bg-neutral-950">
+                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                      </TableHead>
+                    ))}
                   </TableRow>
                 ))}
               </TableHeader>
@@ -330,13 +362,9 @@ export function DataTable() {
                       data-state={row.getIsSelected() && "selected"}
                       className="dark:bg-neutral-950 dark:hover:bg-neutral-900/50"
                     >
-                      {row.getVisibleCells().map((cell) => {
-                        return cell.column.id != "type" ? (
-                          <TableCell key={cell.id}>
-                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                          </TableCell>
-                        ) : null;
-                      })}
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                      ))}
                     </TableRow>
                   ))
                 ) : (

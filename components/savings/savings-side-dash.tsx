@@ -1,31 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import mongoose from "mongoose";
-
 import { savingsData } from "@/lib/fetch-data";
 import { formatNum } from "@/lib/function-lib";
-import { useLoaderModal, useModal } from "@/hooks/use-modals-store";
+import { ISavingsGoal } from "@/lib/types";
 
-import { ProgressCircle } from "@tremor/react";
-
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-
-import { Landmark } from "lucide-react";
-
-interface ISavingsGoal extends Document {
-  _id: mongoose.Types.ObjectId;
-  userId: string;
-  name: string;
-  targetAmount: number;
-  achieved: number;
-  source: string;
-  description: string;
-}
 
 export default function SavingsSideDash({ savings }: { savings: ISavingsGoal[] }) {
   const [filteredData, setFilteredData] = useState([] as { source: string; achieved: number }[]);

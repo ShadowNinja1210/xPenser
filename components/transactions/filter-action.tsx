@@ -14,17 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { transactionData } from "@/lib/fetch-data";
 import { Separator } from "../ui/separator";
-
-export type TransactionData = {
-  id: string;
-  userId: string;
-  amount: number;
-  type: "Expense" | "Income";
-  categoryId: string;
-  description: string;
-  date: string;
-  methodCode: string;
-};
+import { TransactionData } from "@/lib/types";
 
 interface FilterActionProps {
   data: TransactionData[];

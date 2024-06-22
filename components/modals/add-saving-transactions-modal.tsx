@@ -5,7 +5,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useChangeModal, useModal } from "@/hooks/use-modals-store";
 import { useRouter } from "next/navigation";
-import { usePathname } from "next/navigation";
 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { savingsTransactionsData } from "@/lib/fetch-data";
@@ -23,17 +22,27 @@ export default function AddSavingTransactions() {
   const [savingGoal, setSavingGoal] = useState("");
   const [loader, setLoader] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
+  const [target, setTarget] = useState({
+    achieved: 0,
+    target: 0,
+  });
 
-  const urlParts = usePathname().split("/");
-  const savingId = urlParts[urlParts.length - 1];
+  const { change, setChange } = useChangeModal();
+  const { isOpen, onClose, type, savingId } = useModal();
+  const isModalOpen = isOpen && type === "AddSavingTransaction";
 
   useEffect(() => {
     setIsMounted(true);
+    console.log(savingId);
 
     const fetchSavingGoal = async () => {
       try {
         const response = await savingsTransactionsData(savingId);
         setSavingGoal(response?.saving.name);
+        setTarget({
+          achieved: response?.saving?.achieved,
+          target: response?.saving?.targetAmount,
+        });
       } catch (e) {
         console.error(e);
       } finally {
@@ -41,10 +50,8 @@ export default function AddSavingTransactions() {
       }
     };
 
-    if (urlParts.length > 3) fetchSavingGoal();
-  }, []);
-
-  const { change, setChange } = useChangeModal();
+    if (savingId) fetchSavingGoal();
+  }, [savingId]);
 
   const router = useRouter();
 
@@ -86,17 +93,13 @@ export default function AddSavingTransactions() {
     onClose();
   };
 
-  const { isOpen, onClose, type } = useModal();
-
-  const isModalOpen = isOpen && type === "AddSavingTransaction";
-
   if (!isMounted) {
     return null;
   }
 
   return (
     <Dialog open={isModalOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="max-w-[385px]">
         {loader ? (
           <div className="flex justify-center items-center">
             <Loader />

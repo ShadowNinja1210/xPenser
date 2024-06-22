@@ -3,7 +3,7 @@
 import * as React from "react";
 import * as _ from "lodash";
 
-import { ChevronDown, MoreHorizontal, LayoutGrid, CalendarDays } from "lucide-react";
+import { ChevronDown, LayoutGrid, CalendarDays } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,22 +21,12 @@ import { transactionData } from "@/lib/fetch-data";
 import { format } from "date-fns";
 import { useChangeModal, useModal } from "@/hooks/use-modals-store";
 import { FilterAction } from "./filter-action";
+import { TransactionData } from "@/lib/types";
 
 export type ICategory = {
   name: string;
   description?: string;
   type: "Expense" | "Income";
-};
-
-export type TransactionData = {
-  id: string;
-  userId: string;
-  amount: number;
-  type: "Expense" | "Income";
-  categoryId: string;
-  description: string;
-  date: string;
-  methodCode: string;
 };
 
 export function DataCard() {
@@ -104,14 +94,12 @@ export function DataCard() {
               </CardTitle>
               <CardDescription>View and manage all {filteredData.length} transactions.</CardDescription>
             </div>
-            <Button className=" bg-blue-700 text-white" onClick={() => onOpen("AddTransaction")}>
-              Add new
-            </Button>
+            <div>
+              <Button className=" bg-blue-700 text-white" onClick={() => onOpen("AddTransaction")}>
+                Add new
+              </Button>
+            </div>
           </div>
-        </CardHeader>
-        <CardHeader className="px-7">
-          <CardTitle>Transactions</CardTitle>
-          <CardDescription>View and manage all {filteredData.length} transactions.</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="rounded-md flex flex-col gap-3">

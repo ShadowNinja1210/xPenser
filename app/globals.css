@@ -101,3 +101,49 @@ input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
+
+/* Scroll Bar */
+
+/* Wrapper for custom scrollbar */
+.custom-scrollbar {
+  overflow: auto;
+  scrollbar-width: thin; /* For Firefox */
+  scrollbar-color: #888 #f1f1f1; /* For Firefox */
+}
+
+/* Webkit-based browsers (Chrome, Safari) */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px; /* Custom width */
+  height: 8px; /* Custom height for horizontal scrollbar */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Track color */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #888; /* Scrollbar color */
+  border-radius: 10px; /* Rounded corners */
+  border: 2px solid #f1f1f1; /* Padding around scrollbar */
+}
+
+/* Hover effect to make scrollbar more visible */
+.custom-scrollbar:hover::-webkit-scrollbar-thumb {
+  background-color: #555; /* Darker color on hover */
+}
+
+/* Scrollbar visibility on scroll */
+.custom-scrollbar::-webkit-scrollbar-thumb:window-inactive {
+  display: none;
+}
+
+/* Hide scrollbar when not scrolling */
+.custom-scrollbar {
+  scrollbar-gutter: stable;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, and Opera */
+}

@@ -21,7 +21,7 @@ const formSchema = z.object({
     .max(35, { message: "Name is too long" }),
 });
 
-export default function AddSavings() {
+export default function EditSavings() {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -55,12 +55,14 @@ export default function AddSavings() {
         body: JSON.stringify(dataToSend),
       });
 
-      console.log(dataToSend);
-
-      form.reset();
-      setChange(!change);
-      router.refresh();
-      onClose();
+      if (response.status === 200) {
+        form.reset();
+        setChange(!change);
+        router.refresh();
+        onClose();
+      } else {
+        throw new Error("Failed to add saving goal");
+      }
     } catch (e) {
       console.error(e);
     }
@@ -73,7 +75,7 @@ export default function AddSavings() {
 
   const { isOpen, onClose, type } = useModal();
 
-  const isModalOpen = isOpen && type === "AddSavings";
+  const isModalOpen = isOpen && type === "EditSavings";
 
   if (!isMounted) {
     return null;

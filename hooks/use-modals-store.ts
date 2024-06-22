@@ -1,18 +1,40 @@
+import { TransactionData } from "@/lib/types";
 import { create } from "zustand";
 
-export type ModalType = "Feedback" | "AddTransaction" | "AddSavings" | "AddDebt" | "AddSavingTransaction";
+export type ModalType =
+  | "Feedback"
+  | "AddTransaction"
+  | "AddSavings"
+  | "AddDebt"
+  | "AddSavingTransaction"
+  | "EditTransaction"
+  | "EditSavings"
+  | "SavingsTransactions";
 
 interface ModalStore {
   type: ModalType | null;
   isOpen: boolean;
   onOpen: (type: ModalType) => void;
   onClose: () => void;
+  editData: any;
+  savingId: string;
+  setSavingId: (savingId: string) => void;
+  setEditData: (data: any) => void;
 }
 
 export const useModal = create<ModalStore>((set) => ({
   type: null,
-  data: {},
+  editData: {},
+  setEditData: (editData: TransactionData) => {
+    console.log("Setting edit data", editData);
+    set({ editData });
+  },
   isOpen: false,
+  savingId: "",
+  setSavingId: (savingId: string) => {
+    console.log("Setting saving id", savingId);
+    set({ savingId });
+  },
   onOpen: (type: ModalType) => {
     console.log("Opening modal", type);
     set({ isOpen: true, type });

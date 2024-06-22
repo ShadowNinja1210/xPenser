@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 
 import { useModal } from "@/hooks/use-modals-store";
 
-export function Feedback() {
+export default function Feedback() {
   const { isOpen, onClose, type } = useModal();
 
   const isModalOpen = isOpen && type === "Feedback";

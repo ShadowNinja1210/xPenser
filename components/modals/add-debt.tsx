@@ -1,7 +1,7 @@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useModal } from "@/hooks/use-modals-store";
 
-export default function Debt() {
+export default function AddDebt() {
   const { isOpen, onClose, type } = useModal();
   const isModalOpen = isOpen && type === "AddDebt";
 
