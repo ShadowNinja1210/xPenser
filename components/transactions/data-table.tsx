@@ -34,6 +34,7 @@ import { useChangeModal, useModal } from "@/hooks/use-modals-store";
 import { ActionTooltip } from "../action-tool-tip";
 import { FilterAction } from "./filter-action";
 import { TransactionData } from "@/lib/types";
+import { exportPdf } from "@/lib/export-pdf";
 
 // Function to copy transaction details to clipboard (Used in action button of each row)
 const copyTransaction = (transaction: TransactionData) => {
@@ -326,6 +327,9 @@ export function DataTable() {
               <CardDescription>View and manage all {filteredData.length} transactions.</CardDescription>
             </div>
             <div className=" flex gap-2 items-center">
+              <Button className=" bg-blue-700 text-white hover:bg-blue-800" onClick={() => exportPdf(filteredData)}>
+                Export to PDF
+              </Button>
               <Button className=" bg-blue-700 text-white hover:bg-blue-800" onClick={() => onOpen("AddTransaction")}>
                 Add new
               </Button>
