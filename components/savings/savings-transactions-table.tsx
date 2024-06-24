@@ -61,7 +61,7 @@ export default function SavingTransactions({ data }: { data: SavingsTransactions
   // States
   const [pagination, setPagination] = useState({
     pageIndex: 0,
-    pageSize: 5,
+    pageSize: 7,
   });
 
   // React Table
@@ -92,18 +92,18 @@ export default function SavingTransactions({ data }: { data: SavingsTransactions
       <CardContent className="p-0">
         <div className="rounded-md border min-h-[414px]">
           <Table className=" border-b">
-            <TableHeader className="dark:bg-neutral-950 dark:hover:bg-neutral-950 ">
+            <TableHeader className="dark:bg-neutral-950 dark:hover:bg-neutral-950 px-1 ">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id} className="dark:hover:bg-neutral-950">
                   {headerGroup.headers.map((header) => (
-                    <TableHead key={header.id} className="dark:hover:bg-neutral-950">
+                    <TableHead key={header.id} className="dark:hover:bg-neutral-950 px-2">
                       {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                     </TableHead>
                   ))}
                 </TableRow>
               ))}
             </TableHeader>
-            <TableBody className="dark:bg-neutral-950">
+            <TableBody className="dark:bg-neutral-950 px-1">
               {table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row) => (
                   <TableRow
@@ -112,7 +112,9 @@ export default function SavingTransactions({ data }: { data: SavingsTransactions
                     className="dark:bg-neutral-950 dark:hover:bg-neutral-900/50"
                   >
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                      <TableCell className="px-2" key={cell.id}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
                     ))}
                   </TableRow>
                 ))

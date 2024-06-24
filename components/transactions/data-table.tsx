@@ -11,7 +11,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
-import { ChevronDown, Copy, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { ChevronDown, Copy, Download, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -315,6 +315,15 @@ export function DataTable() {
         />
         <div className="space-x-2">
           <FilterAction data={data} setFilteredData={setFilteredData} />
+          <ActionTooltip label="Download">
+            <Button
+              disabled={filteredData.length === 0 || loaderOn}
+              className=" bg-blue-700 text-white hover:bg-blue-800"
+              onClick={() => exportPdf(filteredData)}
+            >
+              <Download className=" h-6 w-6" />
+            </Button>
+          </ActionTooltip>
         </div>
       </div>
       <Card x-chunk="dashboard-05-chunk-3">
@@ -327,19 +336,19 @@ export function DataTable() {
               <CardDescription>View and manage all {filteredData.length} transactions.</CardDescription>
             </div>
             <div className=" flex gap-2 items-center">
-              <Button className=" bg-blue-700 text-white hover:bg-blue-800" onClick={() => exportPdf(filteredData)}>
-                Export to PDF
-              </Button>
-              <Button className=" bg-blue-700 text-white hover:bg-blue-800" onClick={() => onOpen("AddTransaction")}>
-                Add new
-              </Button>
+              <ActionTooltip label="Add new transactions">
+                <Button className=" bg-blue-700 text-white hover:bg-blue-800" onClick={() => onOpen("AddTransaction")}>
+                  Add new
+                </Button>
+              </ActionTooltip>
+
               <Button
                 className="gap-2 text-white bg-red-600 dark:bg-red-700 active:bg-red-900 hover:bg-red-800"
                 variant="outline"
+                disabled={table.getSelectedRowModel().rows.length === 0 || loaderOn}
                 onClick={deleteTransactions}
               >
                 <Trash2 className=" h-6 w-6" />
-                Delete
               </Button>
             </div>
           </div>

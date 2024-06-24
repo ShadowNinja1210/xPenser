@@ -65,7 +65,7 @@ export default function SavingTransactionsModal() {
                           ? "text-green-500"
                           : Math.floor((target?.achieved / target?.target) * 100) >= 50
                           ? "text-orange-400"
-                          : "text-red-400"
+                          : "text-red-500"
                       } font-bold`}
                     >
                       {target?.achieved}

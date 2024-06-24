@@ -15,6 +15,7 @@ import {
 import { transactionData } from "@/lib/fetch-data";
 import { Separator } from "../ui/separator";
 import { TransactionData } from "@/lib/types";
+import { ActionTooltip } from "../action-tool-tip";
 
 interface FilterActionProps {
   data: TransactionData[];
@@ -123,10 +124,12 @@ export function FilterAction({ data, setFilteredData }: FilterActionProps) {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button className=" gap-2" variant="outline">
-          <ListFilter className=" h-6 w-6" />
-          Filter
-        </Button>
+        <ActionTooltip label="Filter">
+          <Button className=" gap-2" variant="outline">
+            <ListFilter className=" h-6 w-6" />
+            Filter
+          </Button>
+        </ActionTooltip>
       </PopoverTrigger>
       <PopoverContent className=" mr-8">
         <div className="space-y-6">
