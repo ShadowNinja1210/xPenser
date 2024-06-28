@@ -6,20 +6,22 @@ export function useMediaQuery(query: string) {
   const [matches, setMatches] = useState<boolean>(false);
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia(query);
-    const updateMatches = () => setMatches(mediaQuery.matches);
+    if (typeof window !== "undefined") {
+      const mediaQuery = window.matchMedia(query);
+      const updateMatches = () => setMatches(mediaQuery.matches);
 
-    updateMatches();
+      updateMatches();
 
-    const listener = (event: MediaQueryListEvent) => {
-      setMatches(event.matches);
-    };
+      const listener = (event: MediaQueryListEvent) => {
+        setMatches(event.matches);
+      };
 
-    mediaQuery.addEventListener("change", listener);
+      mediaQuery.addEventListener("change", listener);
 
-    return () => {
-      mediaQuery.removeEventListener("change", listener);
-    };
+      return () => {
+        mediaQuery.removeEventListener("change", listener);
+      };
+    }
   }, [query]);
 
   return matches;

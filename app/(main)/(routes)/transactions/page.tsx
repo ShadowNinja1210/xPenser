@@ -1,10 +1,18 @@
 "use client";
 
-import { useMediaQuery } from "@react-hook/media-query";
 import { useState, useEffect } from "react";
+import { useMediaQuery } from "@react-hook/media-query";
+import dynamic from "next/dynamic";
 
-import { DataCard } from "@/components/transactions/data-cards";
-import { DataTable } from "@/components/transactions/data-table";
+const DataCard = dynamic(() => import("@/components/transactions/data-cards").then((module) => module.DataCard), {
+  ssr: false,
+  loading: () => <Loader />,
+});
+const DataTable = dynamic(() => import("@/components/transactions/data-table").then((module) => module.DataTable), {
+  ssr: false,
+  loading: () => <Loader />,
+});
+
 import { Loader } from "@/components/loaders/loader";
 import { useLoaderModal } from "@/hooks/use-modals-store";
 
@@ -14,21 +22,31 @@ export default function TransactionPage() {
   const [isLoading, setIsLoading] = useState(true);
   const { setIsLoaderOn, isLoaderOn } = useLoaderModal();
 
-  isLoaderOn && setIsLoaderOn(false);
+  useEffect(() => {
+    if (isLoaderOn) {
+      setIsLoaderOn(false);
+    }
+  }, [isLoaderOn, setIsLoaderOn]);
 
   useEffect(() => {
     setIsClient(true);
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       setIsLoading(false);
     }, 2000);
+
+    return () => clearTimeout(timer);
   }, []);
 
-  return isLoading ? (
-    <main className="flex justify-center items-center w-full h-screen">
-      <title>Transactions</title>
-      <Loader />
-    </main>
-  ) : (
+  if (isLoading) {
+    return (
+      <main className="flex justify-center items-center w-full h-screen">
+        <title>Transactions</title>
+        <Loader />
+      </main>
+    );
+  }
+
+  return (
     <main className="md:px-10 px-4" suppressHydrationWarning>
       <title>Transactions</title>
       {isClient && (isMobileOrTablet ? <DataCard /> : <DataTable />)}
