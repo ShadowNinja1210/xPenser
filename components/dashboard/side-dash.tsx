@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { ExternalLink, Landmark } from "lucide-react";
+import { Banknote, ExternalLink, Landmark } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { CardContent, Card, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
@@ -52,7 +52,7 @@ transactions.push({
 });
 
 export default function SideDash() {
-  const [saving, setSaving] = useState<ISavingsGoal>({});
+  const [saving, setSaving] = useState<ISavingsGoal>({} as ISavingsGoal);
   const [loaderOn, setLoaderOn] = useState(true);
   const today = new Date();
   const month = format(today, "MMMM");
@@ -131,31 +131,55 @@ export default function SideDash() {
           {loaderOn ? (
             <Skeleton className="min-w-80 w-full max-w-[400px] h-[201px] mx-auto" />
           ) : (
-            <Link href={`/savings/${saving._id?.toString()}`} onClick={() => setIsLoaderOn(true)}>
-              <Card className=" min-w-80 w-full max-w-[400px] cursor-pointer mx-auto">
+            <Link href={`/savings`} onClick={() => setIsLoaderOn(true)}>
+              <Card
+                key={saving?._id.toString()}
+                className=" min-w-80 w-full max-w-[400px] cursor-pointer mx-auto"
+                onClick={() => {
+                  setIsLoaderOn(true);
+                }}
+              >
                 <CardHeader className="pb-2">
-                  <CardTitle className=" text-xl">{saving.name}</CardTitle>
-                  <CardDescription>{saving.description}</CardDescription>
+                  <CardTitle className=" text-xl">{saving?.name}</CardTitle>
+                  <CardDescription>{saving?.description}</CardDescription>
                 </CardHeader>
-                <CardContent className="flex items-end justify-between">
-                  <div className=" text-md">
-                    <p>Goal: ₹ {formatNum(Number(saving.targetAmount))}</p>
-                    <p>Achieved: ₹ {formatNum(Number(saving.achieved))}</p>
+                <CardContent className="flex items-end justify-between pb-2">
+                  <div>
+                    <p>
+                      Achieved: <span className="font-bold text-lg">₹ {formatNum(Number(saving?.achieved))}</span>
+                    </p>
+                    <p>Goal: ₹ {formatNum(Number(saving?.targetAmount))}</p>
                   </div>
                   <div>
                     <ProgressCircle
-                      value={Math.floor((Number(saving.achieved) / Number(saving.targetAmount)) * 100)}
+                      value={Math.floor((Number(saving?.achieved) / Number(saving?.targetAmount)) * 100)}
                       size="md"
                       showAnimation
+                      color={
+                        Math.floor((Number(saving?.achieved) / Number(saving?.targetAmount)) * 100) >= 70
+                          ? "green"
+                          : Math.floor((Number(saving?.achieved) / Number(saving?.targetAmount)) * 100) >= 50
+                          ? "amber"
+                          : "red"
+                      }
                     >
-                      <span className="text-sm font-medium text-white">
-                        {Math.floor((Number(saving.achieved) / Number(saving.targetAmount)) * 100)}%
+                      <span
+                        className={`${
+                          Math.floor((Number(saving?.achieved) / Number(saving?.targetAmount)) * 100) >= 70
+                            ? "text-green-500"
+                            : Math.floor((Number(saving?.achieved) / Number(saving?.targetAmount)) * 100) >= 50
+                            ? "text-orange-400"
+                            : "text-red-400"
+                        } text-sm font-bold`}
+                      >
+                        {Math.floor((Number(saving?.achieved) / Number(saving?.targetAmount)) * 100)}%
                       </span>
                     </ProgressCircle>
                   </div>
                 </CardContent>
-                <CardFooter className="text-xs py-1 bg-neutral-600 rounded-[0px_0px_5px_5px] flex items-center justify-center gap-1">
-                  <Landmark className=" h-3.5 w-3.5" /> <span className="mt-[2px]">{saving.source}</span>
+                <CardFooter className="text-xs py-1 bg-neutral-100 dark:bg-neutral-600 rounded-[0px_0px_5px_5px] flex items-center justify-center gap-1">
+                  {saving?.source != "Cash" ? <Landmark className=" h-3.5 w-3.5" /> : <Banknote className=" h-4 w-4" />}{" "}
+                  <span className="mt-[2px]">{saving?.source}</span>
                 </CardFooter>
               </Card>
             </Link>

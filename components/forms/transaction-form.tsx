@@ -40,7 +40,7 @@ function TransactionForm({ onSubmit, form, editData, formType }: TransactionForm
   const [methodSelected, setMethodSelected] = useState(editData?.methodCode || "");
   const [date, setDate] = useState<Date>(editData?.date ? new Date(editData.date) : new Date());
 
-  const [profile, setProfile] = useState<IUser>({});
+  const [profile, setProfile] = useState<IUser>({} as IUser);
 
   const isLoading = form.formState.isSubmitting;
 

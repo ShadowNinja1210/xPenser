@@ -66,7 +66,7 @@ function Filter({ column }: { column: Column<any, unknown> }) {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent defaultValue={""} align="end">
-        <DropdownMenuRadioGroup value={column.getFilterValue()} onValueChange={column.setFilterValue}>
+        <DropdownMenuRadioGroup value={column.getFilterValue() as string} onValueChange={column.setFilterValue}>
           <DropdownMenuRadioItem value="">Both</DropdownMenuRadioItem>
           <DropdownMenuRadioItem value="expense">Expense</DropdownMenuRadioItem>
           <DropdownMenuRadioItem value="income">Income</DropdownMenuRadioItem>

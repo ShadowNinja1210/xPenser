@@ -102,7 +102,7 @@ export default function Dashboard() {
         {/* Transactions Preview Table */}
         <TransactionsPreview />
       </div>
-      <div>
+      <div className="flex gap-4 flex-col">
         {/* -------------------- */}
         {/* Side Dashboard */}
         <SideDash />
