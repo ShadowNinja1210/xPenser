@@ -26,17 +26,14 @@ export const useModal = create<ModalStore>((set) => ({
   type: null,
   editData: {},
   setEditData: (editData: TransactionData) => {
-    console.log("Setting edit data", editData);
     set({ editData });
   },
   isOpen: false,
   savingId: "",
   setSavingId: (savingId: string) => {
-    console.log("Setting saving id", savingId);
     set({ savingId });
   },
   onOpen: (type: ModalType) => {
-    console.log("Opening modal", type);
     set({ isOpen: true, type });
   },
   onClose: () => {

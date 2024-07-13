@@ -46,6 +46,31 @@ interface ISavingsTransaction extends Document {
   date: Date;
 }
 
+interface IDebtAccount extends Document {
+  userId: string;
+  dateBorrowed: Date;
+  amountBorrowed: number;
+  amountWithInterest: number;
+  amountToPay: number;
+  interestRate: number;
+  interestType: "Monthly" | "Quarterly" | "Annually";
+  debtorName: string;
+  dueDate: Date;
+  source: string;
+  status: "Paid" | "Unpaid";
+  reason: string;
+  installments: number;
+  lastPaymentDate?: Date;
+}
+
+interface IDebtTransaction extends Document {
+  debtAccId: mongoose.Types.ObjectId;
+  type: "Payment" | "Penalty";
+  amount: number;
+  date: Date;
+  modeOfPayment: string;
+}
+
 // --------------------
 // Category Schema
 const categorySchema: Schema<ICategory> = new mongoose.Schema({
@@ -70,6 +95,7 @@ const userSchema: Schema<IUser> = new mongoose.Schema({
   categories: [categorySchema],
 });
 
+// User Model
 let User: Model<IUser>;
 if (mongoose.models.User) {
   User = mongoose.model<IUser>("User");
@@ -89,6 +115,7 @@ const transactionSchema: Schema<ITransaction> = new mongoose.Schema({
   methodCode: { type: String, required: true },
 });
 
+// Transaction Model
 let Transaction: Model<ITransaction>;
 if (mongoose.models.Transaction) {
   Transaction = mongoose.model<ITransaction>("Transaction");
@@ -107,6 +134,7 @@ const savingsGoalSchema: Schema<ISavingsGoal> = new mongoose.Schema({
   description: { type: String },
 });
 
+// Savings Goal Model
 let SavingsGoal: Model<ISavingsGoal>;
 if (mongoose.models.SavingsGoal) {
   SavingsGoal = mongoose.model<ISavingsGoal>("SavingsGoal");
@@ -124,6 +152,7 @@ const savingsTransactionSchema: Schema<ISavingsTransaction> = new mongoose.Schem
   date: { type: Date, default: Date.now },
 });
 
+// Savings Transaction Model
 let SavingsTransaction: Model<ISavingsTransaction>;
 if (mongoose.models.SavingsTransaction) {
   SavingsTransaction = mongoose.model<ISavingsTransaction>("SavingsTransaction");
@@ -131,4 +160,49 @@ if (mongoose.models.SavingsTransaction) {
   SavingsTransaction = mongoose.model<ISavingsTransaction>("SavingsTransaction", savingsTransactionSchema);
 }
 
-export { User, Transaction, SavingsGoal, SavingsTransaction };
+// --------------------
+// Debt Account Schema
+const debtAccountSchema: Schema<IDebtAccount> = new mongoose.Schema({
+  userId: { type: String, required: true },
+  debtorName: { type: String, required: true },
+  amountBorrowed: { type: Number, required: true },
+  amountWithInterest: { type: Number, required: true },
+  amountToPay: { type: Number, required: true },
+  interestRate: { type: Number, required: true },
+  dateBorrowed: { type: Date, required: true },
+  dueDate: { type: Date, required: true },
+  source: { type: String, required: true },
+  status: { type: String, enum: ["Paid", "Unpaid"], required: true },
+  reason: { type: String, required: true },
+  installments: { type: Number, required: true },
+  lastPaymentDate: { type: Date, required: false },
+});
+
+// --------------------
+// Debt Transaction Schema
+const debtTransactionSchema: Schema<IDebtTransaction> = new mongoose.Schema({
+  debtAccId: { type: mongoose.Schema.Types.ObjectId, ref: "DebtAccount", required: true },
+  type: { type: String, enum: ["Payment", "Penalty"], required: true },
+  amount: { type: Number, required: true },
+  date: { type: Date, default: Date.now, required: true },
+  modeOfPayment: { type: String, required: true },
+});
+
+// --------------------
+// Models
+
+let DebtAccount: Model<IDebtAccount>;
+if (mongoose.models.DebtAccount) {
+  DebtAccount = mongoose.model<IDebtAccount>("DebtAccount");
+} else {
+  DebtAccount = mongoose.model<IDebtAccount>("DebtAccount", debtAccountSchema);
+}
+
+let DebtTransaction: Model<IDebtTransaction>;
+if (mongoose.models.DebtTransaction) {
+  DebtTransaction = mongoose.model<IDebtTransaction>("DebtTransaction");
+} else {
+  DebtTransaction = mongoose.model<IDebtTransaction>("DebtTransaction", debtTransactionSchema);
+}
+
+export { User, Transaction, SavingsGoal, SavingsTransaction, DebtAccount, DebtTransaction };

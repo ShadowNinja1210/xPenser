@@ -1,5 +1,6 @@
 "use client";
 
+import Debt from "@/components/debt/debt";
 import { useLoaderModal } from "@/hooks/use-modals-store";
 
 export default function DebtsPage() {
@@ -7,9 +8,9 @@ export default function DebtsPage() {
 
   isLoaderOn && setIsLoaderOn(false);
   return (
-    <div>
-      <title>Debts</title>
-      <h1>Debts</h1>
-    </div>
+    <main className="md:px-10 px-4">
+      <title>Debts - xPenser</title>
+      <Debt />
+    </main>
   );
 }

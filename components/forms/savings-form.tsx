@@ -8,39 +8,18 @@ import { DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
-interface ICategory {
-  _id: object;
-  name: string;
-  description?: string;
-  type: "Expense" | "Income";
-}
-
-interface IUser extends Document {
-  userId: string;
-  email: string;
-  name: string;
-  profilePicture?: string;
-  methods: { _id: string; code: string; name: string }[];
-  categories: ICategory[];
-}
-
 interface TransactionFormProps {
   onSubmit: Function;
   form: any;
   formType: string;
 }
 
-function SavingsForm({ onSubmit, form, formType }: TransactionFormProps) {
+function SavingsForm({ onSubmit, form }: TransactionFormProps) {
   const [isMounted, setIsMounted] = useState(false);
   const [nameLength, setNameLength] = useState(0);
   const [descriptionLength, setDescriptionLength] = useState(0);
 
   const isLoading = form.formState.isSubmitting;
-
-  useEffect(() => {
-    console.log("form");
-    console.log(form);
-  }, []);
 
   useEffect(() => {
     setIsMounted(true);

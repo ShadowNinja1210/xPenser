@@ -67,7 +67,7 @@ export default function SideDash() {
         const data = await savingsData();
         setSaving(data?.savings[0]);
       } catch (e) {
-        console.log(e);
+        console.error(e);
       } finally {
         setLoaderOn(false);
       }

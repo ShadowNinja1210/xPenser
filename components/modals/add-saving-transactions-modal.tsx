@@ -33,7 +33,6 @@ export default function AddSavingTransactions() {
 
   useEffect(() => {
     setIsMounted(true);
-    console.log(savingId);
 
     const fetchSavingGoal = async () => {
       try {
@@ -75,9 +74,6 @@ export default function AddSavingTransactions() {
         },
         body: JSON.stringify(values),
       });
-
-      console.log(response);
-      console.log(values);
 
       form.reset();
       setChange(!change);

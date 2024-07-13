@@ -53,17 +53,17 @@ export function FilterAction({ data, setFilteredData }: FilterActionProps) {
     let filteredData = [...data];
 
     // Apply category filter
-    if (filters.category.length > 0) {
+    if (filters.category?.length > 0) {
       filteredData = filteredData.filter((transaction) => filters.category.includes(transaction.categoryId));
     }
 
     // Apply type filter
-    if (filters.type.length > 0) {
+    if (filters.type?.length > 0) {
       filteredData = filteredData.filter((transaction) => filters.type.includes(transaction.type));
     }
 
     // Apply method filter
-    if (filters.method.length > 0) {
+    if (filters.method?.length > 0) {
       filteredData = filteredData.filter((transaction) => filters.method.includes(transaction.methodCode));
     }
 

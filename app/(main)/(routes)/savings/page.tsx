@@ -9,7 +9,7 @@ export default function SavingsPage() {
   isLoaderOn && setIsLoaderOn(false);
   return (
     <main className="md:px-10 px-4">
-      <title>Saving</title>
+      <title>Saving - xPenser</title>
       <Savings />
     </main>
   );

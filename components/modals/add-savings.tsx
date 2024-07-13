@@ -55,8 +55,6 @@ export default function AddSavings() {
         body: JSON.stringify(dataToSend),
       });
 
-      console.log(dataToSend);
-
       form.reset();
       setChange(!change);
       router.refresh();

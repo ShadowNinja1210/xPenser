@@ -12,8 +12,8 @@ const MainLayout = async ({ children }: { children: React.ReactNode }) => {
   return (
     <main>
       <ModalProvider />
-      <Navbar />
       <LineLoader />
+      <Navbar />
       {children}
     </main>
   );

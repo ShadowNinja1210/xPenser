@@ -33,7 +33,6 @@ export default function SavingTransactionsModal() {
   useEffect(() => {
     setLoaderOn(true);
     const fetchData = async () => {
-      console.log(savingId);
       const data = await savingsTransactionsData(savingId);
       setData(data?.transactions);
       setSavingGoalName(data?.saving?.name);

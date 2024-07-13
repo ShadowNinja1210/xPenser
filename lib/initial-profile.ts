@@ -32,7 +32,6 @@ const InitialProfile = async () => {
   }
 
   if (!profile) {
-    console.log("Creating new user profile...");
     const profile = await User.create({
       userId: user.id,
       email: user.emailAddresses[0].emailAddress,

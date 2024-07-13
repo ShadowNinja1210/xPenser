@@ -8,7 +8,7 @@ export default function ReportsPage() {
   isLoaderOn && setIsLoaderOn(false);
   return (
     <div>
-      <title>Report</title>
+      <title>Reports - xPenser</title>
       <h1>Reports</h1>
     </div>
   );

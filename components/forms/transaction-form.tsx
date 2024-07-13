@@ -62,7 +62,7 @@ function TransactionForm({ onSubmit, form, editData, formType }: TransactionForm
       form.setValue("type", editData.type);
       form.setValue("description", editData.description);
     }
-  }, [editData]);
+  }, [editData, form]);
 
   useEffect(() => {
     fetchData();

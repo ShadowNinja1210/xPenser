@@ -11,7 +11,7 @@ export default function Home() {
 
   return (
     <>
-      <title>Dashboard</title>
+      <title>Dashboard - xPenser</title>
       <Dashboard />
     </>
   );

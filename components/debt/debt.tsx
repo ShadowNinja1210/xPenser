@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import mongoose from "mongoose";
 
 import { savingsData } from "@/lib/fetch-data";
 import { formatNum } from "@/lib/function-lib";
@@ -18,7 +17,7 @@ import { Banknote, Landmark } from "lucide-react";
 import SavingsSideDash from "@/components/savings/savings-side-dash";
 import { ISavingsGoal } from "@/lib/types";
 
-export default function Savings() {
+export default function Debt() {
   const [savings, setSavings] = useState<ISavingsGoal[]>([]);
   const [filteredData, setFilteredData] = useState<ISavingsGoal[]>([]);
   const [loaderOn, setLoaderOn] = useState(true);

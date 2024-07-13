@@ -8,7 +8,7 @@ export default function GuidePage() {
   isLoaderOn && setIsLoaderOn(false);
   return (
     <div>
-      <title>Guide</title>
+      <title>Guide - xPenser</title>
       <h1>Guide</h1>
     </div>
   );

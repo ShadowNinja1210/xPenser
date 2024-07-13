@@ -262,7 +262,6 @@ export function DataTable() {
     const selectedRows = table.getSelectedRowModel().rows;
     const ids = selectedRows.map((row) => row.original._id);
     const userId = selectedRows[0].original.userId;
-    console.log("Deleting", ids, " for ", userId);
 
     const body = { ids: ids };
     try {

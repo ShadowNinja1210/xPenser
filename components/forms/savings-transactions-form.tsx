@@ -116,7 +116,6 @@ function SavingTransactionForm({ onSubmit, form }: TransactionFormProps) {
                     className="flex items-end space-y-1"
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                       if (field.value === e.target.value) {
-                        console.log(i++, e.target.value);
                         form.setValue("type", e.target.value);
                       }
                     }}

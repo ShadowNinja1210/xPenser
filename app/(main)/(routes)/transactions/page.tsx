@@ -40,7 +40,7 @@ export default function TransactionPage() {
   if (isLoading) {
     return (
       <main className="flex justify-center items-center w-full h-screen">
-        <title>Transactions</title>
+        <title>Transactions - xPenser</title>
         <Loader />
       </main>
     );

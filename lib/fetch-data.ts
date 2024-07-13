@@ -27,8 +27,6 @@ const transactionData = async () => {
       categories,
     };
 
-    console.log(data);
-
     return data;
   } catch (error) {
     console.error(error);
@@ -81,4 +79,18 @@ const savingsTransactionsData = async (savingId: string) => {
   }
 };
 
-export { transactionData, savingsData, savingsTransactionsData };
+const debtData = async () => {
+  try {
+    const res = await fetch("/api/user");
+    const fetchedUser = await res.json();
+
+    const response = await fetch(`/api/debt/${fetchedUser.userId}`);
+    const debts = await response.json();
+
+    return debts;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export { transactionData, savingsData, savingsTransactionsData, debtData };
