@@ -38,7 +38,6 @@ export function MainLoader() {
             </li>
           </ul>
         </div>
-        <span>Loading</span>
       </div>
     </main>
   );

@@ -20,12 +20,12 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
 // Types
-interface TransactionFormProps {
+interface DebtTransactionFormProps {
   onSubmit: Function;
   form: any;
 }
 
-function SavingTransactionForm({ onSubmit, form }: TransactionFormProps) {
+function DebtTransactionForm({ onSubmit, form }: DebtTransactionFormProps) {
   const [isMounted, setIsMounted] = useState(false);
   const [date, setDate] = useState<Date>();
 
@@ -166,4 +166,4 @@ function SavingTransactionForm({ onSubmit, form }: TransactionFormProps) {
   );
 }
 
-export default SavingTransactionForm;
+export default DebtTransactionForm;

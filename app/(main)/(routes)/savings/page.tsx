@@ -1,6 +1,7 @@
 "use client";
 
-import Savings from "@/components/savings/savings";
+import dynamic from "next/dynamic";
+const Savings = dynamic(() => import("@/components/savings/savings"));
 import { useLoaderModal } from "@/hooks/use-modals-store";
 
 export default function SavingsPage() {

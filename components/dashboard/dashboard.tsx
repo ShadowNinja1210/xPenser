@@ -1,17 +1,20 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
-import { formatNum } from "@/lib/function-lib";
+import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 
+// Components
+const TransactionsPreview = dynamic(() => import("./transactions-preview"));
+const SideDash = dynamic(() => import("./side-dash"));
+
+// UI Components
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-
 import { CardContent, Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
-import TransactionsPreview from "./transactions-preview";
-import SideDash from "./side-dash";
+// Functions
+import { formatNum } from "@/lib/function-lib";
 import { transactionMetrics } from "@/lib/fetch-metrics";
-import { Loader } from "../loaders/loader";
 
 export type ICategory = {
   name: string;

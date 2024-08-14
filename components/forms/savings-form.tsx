@@ -2,12 +2,14 @@
 
 import { useState, useEffect } from "react";
 
+// UI Components
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
+// Types
 interface TransactionFormProps {
   onSubmit: Function;
   form: any;

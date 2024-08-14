@@ -2,6 +2,8 @@
 
 import * as React from "react";
 import * as _ from "lodash";
+
+// React Query Table
 import {
   ColumnDef,
   flexRender,
@@ -11,11 +13,14 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
+// React Icons
 import { ChevronDown, Copy, Download, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 
+// React UI Components
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import { CardContent, Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
@@ -27,14 +32,19 @@ import {
   DropdownMenuTrigger,
   DropdownMenuRadioItem,
 } from "@/components/ui/dropdown-menu";
+
+// Functions
 import { transactionData } from "@/lib/fetch-data";
-import { format } from "date-fns";
-import { Skeleton } from "../ui/skeleton";
-import { useChangeModal, useModal } from "@/hooks/use-modals-store";
-import { ActionTooltip } from "../action-tool-tip";
-import { FilterAction } from "./filter-action";
-import { TransactionData } from "@/lib/types";
 import { exportPdf } from "@/lib/export-pdf";
+import { format } from "date-fns";
+
+// Types
+import { TransactionData } from "@/lib/types";
+
+// Hooks
+import { useChangeModal, useModal } from "@/hooks/use-modals-store";
+import { ActionTooltip } from "@/components/action-tool-tip";
+import { FilterAction } from "./filter-action";
 
 // Function to copy transaction details to clipboard (Used in action button of each row)
 const copyTransaction = (transaction: TransactionData) => {

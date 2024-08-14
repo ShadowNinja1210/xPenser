@@ -1,6 +1,7 @@
 "use client";
 
-import Debt from "@/components/debt/debt";
+import dynamic from "next/dynamic";
+const Debt = dynamic(() => import("@/components/debt/debt"));
 import { useLoaderModal } from "@/hooks/use-modals-store";
 
 export default function DebtsPage() {

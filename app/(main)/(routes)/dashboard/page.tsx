@@ -1,6 +1,8 @@
 "use client";
 
-import Dashboard from "@/components/dashboard/dashboard";
+import dynamic from "next/dynamic";
+
+const Dashboard = dynamic(() => import("@/components/dashboard/dashboard"));
 
 import { useLoaderModal } from "@/hooks/use-modals-store";
 

@@ -93,4 +93,21 @@ const debtData = async () => {
   }
 };
 
-export { transactionData, savingsData, savingsTransactionsData, debtData };
+const debtTransactionData = async (debtId: string) => {
+  try {
+    const res = await fetch("/api/user");
+    const fetchedUser = await res.json();
+
+    const response = await fetch(`/api/debt/${fetchedUser.userId}/transactions/${debtId}`);
+    let transactions = await response.json();
+    transactions?.sort((a: any, b: any) => {
+      return new Date(a.date).getTime() - new Date(b.date).getTime();
+    });
+
+    return transactions;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export { transactionData, savingsData, savingsTransactionsData, debtData, debtTransactionData };

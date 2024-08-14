@@ -1,14 +1,19 @@
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-
 import { useEffect, useState } from "react";
 import { useChangeModal, useModal } from "@/hooks/use-modals-store";
 import { useRouter } from "next/navigation";
 
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+// Components
 import DebtForm from "../forms/debt-form";
 
+// UI Components
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+
+// Form Functions
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+// Form Schema
 const formSchema = z.object({
   debtorName: z
     .string({ message: "Name is required" })
@@ -31,13 +36,17 @@ const formSchema = z.object({
     .max(35, { message: "Name is too long" }),
 });
 
+// Main Component for Debt
 export default function AddDebt() {
+  // State
   const [isMounted, setIsMounted] = useState(false);
 
+  // Mounting
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
+  // Modal Functions for fetching data
   const { change, setChange } = useChangeModal();
 
   const router = useRouter();
@@ -46,10 +55,10 @@ export default function AddDebt() {
     resolver: zodResolver(formSchema),
   });
 
+  // Function to handle form submission
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      console.log(values);
-      console.log("Submitting form...");
+      // Fetching user data for userId
       const res = await fetch(`/api/user`);
       const user = await res.json();
       const userId = user.userId;
@@ -58,6 +67,7 @@ export default function AddDebt() {
         status: "Unpaid",
       };
 
+      // POST request to add new debt account
       const response = await fetch(`/api/debt/${userId}/new`, {
         method: "POST",
         headers: {
@@ -66,6 +76,7 @@ export default function AddDebt() {
         body: JSON.stringify(dataToSend),
       });
 
+      // If successful, reset form, refresh page and close modal
       if (response.status === 201) {
         form.reset();
         setChange(!change);
@@ -77,13 +88,14 @@ export default function AddDebt() {
     }
   }
 
+  // Function to handle closing of the modal
   const handleClose = () => {
     form.reset();
     onClose();
   };
 
+  // Modal State
   const { isOpen, onClose, type } = useModal();
-
   const isModalOpen = isOpen && type === "AddDebt";
 
   if (!isMounted) {

@@ -1,13 +1,19 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
 
+// Functions
 import { format } from "date-fns";
-
-import { ChevronDown, Calendar as CalendarIcon } from "lucide-react";
-
 import { cn } from "@/lib/utils";
 
+// Icons
+import { ChevronDown, Calendar as CalendarIcon } from "lucide-react";
+
+// Components
+import { Loader } from "../loaders/loader";
+
+// UI Components
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -23,7 +29,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
-import { Loader } from "../loaders/loader";
+// Types
 import { TransactionData, IUser } from "@/lib/types";
 
 interface TransactionFormProps {

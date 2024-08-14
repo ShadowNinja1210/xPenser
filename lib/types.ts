@@ -53,26 +53,34 @@ export type ISavingsSourceMetrics = {
 };
 
 export type IDebtAccount = {
-  accountId: string;
-  dateBorrowed: Date;
+  _id: object;
+  userId: string;
+  debtorName: string;
   amountBorrowed: number;
   amountWithInterest: number;
   amountToPay: number;
   interestRate: number;
-  interestType: "Monthly" | "Quarterly" | "Annually";
-  debtorName: string;
+  dateBorrowed: Date;
   dueDate: Date;
   source: string;
   status: "Paid" | "Unpaid";
   reason: string;
   installments: number;
-  lastPaymentDate: Date;
+  lastPaymentDate?: Date;
 };
 
 export type IDebtTransaction = {
+  _id: object;
   debtAccId: object;
-  type: "Payment" | "Penalty";
+  type: string | "Payment" | "Penalty";
   amount: number;
   date: Date;
   modeOfPayment: string;
+  remarks?: string;
+};
+
+export type chartData = {
+  name: string;
+  mapData: number;
+  fill: string;
 };

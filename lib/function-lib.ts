@@ -1,3 +1,6 @@
+import { type ChartConfig } from "@/components/ui/chart";
+import { chartData } from "@/lib/types";
+
 // Functions for Indian Numbering System
 function formatNum(number: number) {
   let num1 = Math.floor(number / 1000).toString();
@@ -67,4 +70,17 @@ function retrieveID(uid: string) {
   return numberToString(num);
 }
 
-export { formatNum, generateUID, retrieveID };
+const createChartConfig = (data: chartData[]) => {
+  const chartConfig: { [key: string]: { label: string; color?: string } } = {};
+
+  data.forEach((item) => {
+    chartConfig[item.name] = {
+      label: item.name,
+      color: item.fill,
+    };
+  });
+
+  return chartConfig satisfies ChartConfig;
+};
+
+export { formatNum, generateUID, retrieveID, createChartConfig };

@@ -69,6 +69,7 @@ interface IDebtTransaction extends Document {
   amount: number;
   date: Date;
   modeOfPayment: string;
+  remarks?: string;
 }
 
 // --------------------
@@ -186,6 +187,7 @@ const debtTransactionSchema: Schema<IDebtTransaction> = new mongoose.Schema({
   amount: { type: Number, required: true },
   date: { type: Date, default: Date.now, required: true },
   modeOfPayment: { type: String, required: true },
+  remarks: { type: String },
 });
 
 // --------------------

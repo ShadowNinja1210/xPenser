@@ -79,7 +79,6 @@ function TransactionForm({ onSubmit, form, editData, formType }: TransactionForm
       form.setValue("installments", editData.installments);
       form.setValue("source", editData.source);
       form.setValue("interestRate", editData.interestRate);
-      form.setValue("interestType", editData.interestType);
       form.setValue("amountToPay", editData.amountToPay);
     }
   }, [editData, form]);
@@ -430,21 +429,16 @@ function TransactionForm({ onSubmit, form, editData, formType }: TransactionForm
               <p className="text-xs uppercase font-bold">Calculated Amount:</p>
               <div className="flex gap-2 items-end">
                 <p className="text-xl font-black">₹ {formatNum(calcAmount)}</p>
-                {/* {calcAmount > 0 && (
-                  <>
-                    <button
-                      onClick={() => {
-                        form.setValue("amountToPay", calcAmount);
-                      }}
-                      className="mb-1 p-0.5 h-5 w-5 text-center text-green-500 bg-neutral-700 bg-opacity-40 rounded-md"
-                    >
-                      <FaCheck width={10} height={10} />
-                    </button>
-                    <button className="mb-1 p-1 h-5 w-5 flex font-semibold justify-center items-center text-center text-red-500 bg-neutral-700 bg-opacity-40 rounded-md">
-                      X
-                    </button>
-                  </>
-                )} */}
+                {calcAmount > 0 && (
+                  <button
+                    onClick={() => {
+                      form.setValue("amountToPay", calcAmount);
+                    }}
+                    className="mb-1 p-0.5 h-5 w-5 text-center text-green-500 bg-neutral-700 bg-opacity-40 rounded-md"
+                  >
+                    <FaCheck width={10} height={10} />
+                  </button>
+                )}
               </div>
             </div>
 
